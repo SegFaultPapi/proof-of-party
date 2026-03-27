@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Calendar, MapPin, QrCode, ChevronLeft, CheckCircle2, XCircle, Banknote, ChevronRight } from "lucide-react"
+import { Calendar, MapPin, QrCode, ChevronLeft, CheckCircle2, XCircle, Mic, ChevronRight, Banknote } from "lucide-react"
 import { useApp, MOCK_EVENTS, type Event } from "@/lib/store"
 import { cn } from "@/lib/utils"
 
@@ -171,10 +171,35 @@ export function ScreenEvents() {
         </div>
       )}
 
+      {/* ── AI Escuchar Agente ─────────────────────────────── */}
+      <button
+        onClick={() => goTo("cruda")}
+        className="mt-6 w-full rounded-2xl p-4 flex items-center gap-4 transition-all hover:shadow-lg active:scale-[0.98]"
+        style={{
+          background: "linear-gradient(135deg, rgba(131,110,249,0.15) 0%, rgba(75,63,114,0.1) 100%)",
+          border: "1px solid rgba(131,110,249,0.35)",
+          boxShadow: "0 0 20px rgba(131,110,249,0.1)",
+        }}
+      >
+        {/* Pulsing orb */}
+        <div className="relative flex-shrink-0">
+          <div className="absolute inset-0 rounded-full animate-ping" style={{ background: "rgba(131,110,249,0.3)", animationDuration: "1.5s" }} />
+          <div className="w-12 h-12 rounded-full flex items-center justify-center relative z-10"
+            style={{ background: "linear-gradient(135deg, #836ef9 0%, #4b3f72 100%)", boxShadow: "0 0 20px rgba(131,110,249,0.5)" }}>
+            <Mic className="w-5 h-5 text-white" />
+          </div>
+        </div>
+        <div className="text-left flex-1">
+          <p className="font-bold text-sm" style={{ color: "#ffffff" }}>Hablar con el Agente IA</p>
+          <p className="text-xs" style={{ color: "#a594fb" }}>El agente te escucha en tiempo real 🔴</p>
+        </div>
+        <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: "#836ef9" }} />
+      </button>
+
       <Link
         href="/onramp"
-        className="mt-6 w-full rounded-2xl p-4 flex items-center justify-between gap-3 transition-all hover:shadow-md"
-        style={{ background: "#ffffff", border: "1px solid #bbf7d0", boxShadow: "0 2px 8px rgba(34,197,94,0.1)" }}
+        className="mt-4 w-full rounded-2xl p-4 flex items-center justify-between gap-3 transition-all hover:shadow-md"
+        style={{ background: "rgba(20, 10, 35, 0.6)", border: "1px solid rgba(34,197,94,0.2)" }}
       >
         <div className="flex items-center gap-3 min-w-0">
           <div
@@ -184,8 +209,8 @@ export function ScreenEvents() {
             <Banknote className="w-5 h-5" style={{ color: "#16a34a" }} />
           </div>
           <div className="text-left min-w-0">
-            <p className="font-semibold text-sm" style={{ color: "#14532d" }}>Fondos al seguro</p>
-            <p className="text-xs truncate" style={{ color: "#166534" }}>
+            <p className="font-semibold text-sm" style={{ color: "#ffffff" }}>Fondos al seguro</p>
+            <p className="text-xs truncate" style={{ color: "#a594fb" }}>
               Onramp Etherfuse sandbox · /onramp
             </p>
           </div>
