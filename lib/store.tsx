@@ -61,9 +61,8 @@ export interface DashboardEntry {
 
 interface AppState {
   screen: Screen
+  /** Dirección EVM (0x…) sincronizada con wagmi en Monad Testnet */
   wallet: string | null
-  /** Dirección EVM completa (0x…) cuando hay wallet real; se muestra acortada en UI */
-  walletIsDemo: boolean
   etherfuseCustomerId: string | null
   kycStatus: EtherfuseKycStatus | null
   checkIn: CheckIn | null
@@ -75,7 +74,8 @@ interface AppState {
 
 interface AppContextType extends AppState {
   setScreen: (s: Screen) => void
-  connectWallet: () => Promise<void>
+  /** Actualiza la dirección desde wagmi (o null al desconectar). */
+  syncWalletFromChain: (address: string | null) => void
   disconnectWallet: () => void
   setEtherfuseCustomerId: (id: string | null) => void
   setKycStatus: (s: EtherfuseKycStatus | null) => void
@@ -116,7 +116,6 @@ function calcHangoverScore(m: Metrics): { score: number; verdict: Verdict; payou
 
 const AppContext = createContext<AppContextType | null>(null)
 
-const DEMO_WALLET = "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb" as const
 const STORAGE_EF_CUSTOMER = "pop_ef_customer_id"
 const STORAGE_EF_WALLET = "pop_ef_wallet"
 
@@ -124,7 +123,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AppState>({
     screen: "home",
     wallet: null,
-    walletIsDemo: false,
     etherfuseCustomerId: null,
     kycStatus: null,
     checkIn: null,
@@ -155,39 +153,28 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }, [])
 
-  const connectWallet = useCallback(async () => {
-    if (typeof window !== "undefined" && window.ethereum) {
+  const syncWalletFromChain = useCallback((address: string | null) => {
+    setState(s => {
+      if (address === null) {
+        return { ...s, wallet: null }
+      }
       try {
-        const accounts = (await window.ethereum.request({ method: "eth_requestAccounts" })) as string[]
-        const addr = accounts?.[0]
-        if (addr && /^0x[a-fA-F0-9]{40}$/.test(addr)) {
-          let restoredCustomer: string | null = null
-          try {
-            const sw = sessionStorage.getItem(STORAGE_EF_WALLET)
-            const c = sessionStorage.getItem(STORAGE_EF_CUSTOMER)
-            if (sw && c && sw.toLowerCase() === addr.toLowerCase()) restoredCustomer = c
-          } catch {
-            /* ignore */
-          }
-          setState(s => ({
-            ...s,
-            wallet: addr,
-            walletIsDemo: false,
-            etherfuseCustomerId: restoredCustomer ?? s.etherfuseCustomerId,
-            screen: "events",
-          }))
-          return
+        const sw = sessionStorage.getItem(STORAGE_EF_WALLET)
+        const c = sessionStorage.getItem(STORAGE_EF_CUSTOMER)
+        if (c && sw && sw.toLowerCase() === address.toLowerCase()) {
+          return { ...s, wallet: address, etherfuseCustomerId: c }
         }
       } catch {
-        /* usuario rechazó o error */
+        /* ignore */
       }
-    }
-    setState(s => ({
-      ...s,
-      wallet: DEMO_WALLET,
-      walletIsDemo: true,
-      screen: "events",
-    }))
+      const prev = s.wallet?.toLowerCase()
+      const next = address.toLowerCase()
+      return {
+        ...s,
+        wallet: address,
+        etherfuseCustomerId: prev === next ? s.etherfuseCustomerId : null,
+      }
+    })
   }, [])
 
   const setEtherfuseCustomerId = useCallback((id: string | null) => {
@@ -208,7 +195,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setState(s => ({
       ...s,
       wallet: null,
-      walletIsDemo: false,
       etherfuseCustomerId: null,
       kycStatus: null,
       screen: "home",
@@ -286,7 +272,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       value={{
         ...state,
         setScreen,
-        connectWallet,
+        syncWalletFromChain,
         disconnectWallet,
         setEtherfuseCustomerId,
         setKycStatus,

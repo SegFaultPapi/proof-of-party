@@ -1,6 +1,7 @@
 "use client"
 
 import { ArrowRight, Zap, Moon, DollarSign, ChevronRight, Globe } from "lucide-react"
+import { useAccount } from "wagmi"
 import { useApp } from "@/lib/store"
 import { WalletButton } from "./wallet-button"
 
@@ -32,7 +33,8 @@ const steps = [
 ]
 
 export function ScreenHome() {
-  const { wallet, goTo } = useApp()
+  const { isConnected } = useAccount()
+  const { goTo } = useApp()
 
   return (
     <main className="min-h-screen flex flex-col" style={{ background: "#f8f5ff" }}>
@@ -76,7 +78,7 @@ export function ScreenHome() {
         </p>
 
         {/* CTA */}
-        {wallet ? (
+        {isConnected ? (
           <button
             onClick={() => goTo("events")}
             className="flex items-center gap-2.5 font-bold rounded-2xl px-8 py-4 text-base transition-all w-full max-w-xs justify-center text-white bg-gradient-purple glow-purple hover:opacity-90 active:scale-95"

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Space_Grotesk, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
+import { AppToaster } from '@/components/providers/app-toaster'
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -37,6 +38,7 @@ export default function RootLayout({
     <html lang="es" className={`${spaceGrotesk.variable} ${geistMono.variable}`}>
       <body className="font-sans antialiased min-h-screen bg-background text-foreground">
         {children}
+        <AppToaster />
         <Analytics />
       </body>
     </html>

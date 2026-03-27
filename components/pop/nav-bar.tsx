@@ -1,11 +1,13 @@
 "use client"
 
 import { Zap, Shield } from "lucide-react"
+import { useAccount } from "wagmi"
 import { useApp } from "@/lib/store"
 import { WalletButton } from "./wallet-button"
 
 export function NavBar() {
-  const { goTo, wallet } = useApp()
+  const { isConnected } = useAccount()
+  const { goTo } = useApp()
 
   return (
     <header
@@ -35,7 +37,7 @@ export function NavBar() {
           </span>
         </button>
         <div className="flex items-center gap-2">
-          {wallet && (
+          {isConnected && (
             <button
               type="button"
               onClick={() => goTo("kyc")}

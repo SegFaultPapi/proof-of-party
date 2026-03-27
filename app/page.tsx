@@ -1,6 +1,8 @@
 "use client"
 
 import { AppProvider, useApp } from "@/lib/store"
+import { Web3Providers } from "@/components/providers/web3-providers"
+import { WalletSync } from "@/components/wagmi/wallet-sync"
 import { NavBar } from "@/components/pop/nav-bar"
 import { ScreenHome } from "@/components/pop/screen-home"
 import { ScreenEvents } from "@/components/pop/screen-events"
@@ -33,8 +35,11 @@ function AppRouter() {
 
 export default function Home() {
   return (
-    <AppProvider>
-      <AppRouter />
-    </AppProvider>
+    <Web3Providers>
+      <AppProvider>
+        <WalletSync />
+        <AppRouter />
+      </AppProvider>
+    </Web3Providers>
   )
 }
