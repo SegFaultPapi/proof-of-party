@@ -24,12 +24,11 @@ export function NavBar() {
           className="flex items-center gap-2"
           aria-label="Ir a inicio"
         >
-          <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center"
-            style={{ background: "linear-gradient(135deg, #836ef9 0%, #6b56e8 100%)" }}
-          >
-            <Zap className="w-3.5 h-3.5 text-white" fill="white" />
-          </div>
+          <img 
+            src="/LogoPOP.png" 
+            alt="Logo POP" 
+            className="h-8 w-auto object-contain" 
+          />
           <span className="font-bold text-sm tracking-tight" style={{ color: "#ffffff" }}>
             Proof<span style={{ color: "#836ef9" }}>of</span>Party
           </span>
