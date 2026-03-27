@@ -2,6 +2,7 @@
 
 import { Wallet, ChevronDown, LogOut, Copy, Loader2 } from "lucide-react"
 import { useState } from "react"
+import { usePathname } from "next/navigation"
 import { useConnect, useDisconnect, useAccount, useChainId, useSwitchChain } from "wagmi"
 import { injected } from "wagmi/connectors"
 import { toast } from "sonner"
@@ -15,6 +16,7 @@ interface WalletButtonProps {
 }
 
 export function WalletButton({ compact, className }: WalletButtonProps) {
+  const pathname = usePathname()
   const { goTo, disconnectWallet } = useApp()
   const [open, setOpen] = useState(false)
 
@@ -38,7 +40,7 @@ export function WalletButton({ compact, className }: WalletButtonProps) {
       } catch {
         /* ya en Monad Testnet o wallet rechazó un segundo prompt */
       }
-      goTo("events")
+      if (pathname !== "/onramp") goTo("events")
     } catch (e) {
       const msg = e instanceof Error ? e.message : "No se pudo conectar"
       toast.error(msg)

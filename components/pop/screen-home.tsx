@@ -1,6 +1,7 @@
 "use client"
 
-import { ArrowRight, Zap, Moon, DollarSign, ChevronRight, Globe } from "lucide-react"
+import Link from "next/link"
+import { ArrowRight, Zap, Moon, DollarSign, ChevronRight, Globe, Banknote } from "lucide-react"
 import { useAccount } from "wagmi"
 import { useApp } from "@/lib/store"
 import { WalletButton } from "./wallet-button"
@@ -124,6 +125,29 @@ export function ScreenHome() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* Onramp test */}
+      <section className="px-5 pb-4 max-w-md mx-auto w-full">
+        <Link
+          href="/onramp"
+          className="w-full rounded-2xl p-4 flex items-center justify-between transition-all hover:shadow-md block"
+          style={{ background: "#ffffff", border: "1px solid #d8ccfa", boxShadow: "0 2px 8px rgba(131,110,249,0.08)" }}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className="w-9 h-9 rounded-xl flex items-center justify-center"
+              style={{ background: "rgba(34, 197, 94, 0.1)", border: "1px solid rgba(34, 197, 94, 0.25)" }}
+            >
+              <Banknote className="w-4 h-4" style={{ color: "#16a34a" }} />
+            </div>
+            <div className="text-left">
+              <p className="text-sm font-semibold" style={{ color: "#1a0f3c" }}>Fondos al seguro (onramp)</p>
+              <p className="text-xs" style={{ color: "#7c6bb5" }}>Probar Etherfuse sandbox · Monad</p>
+            </div>
+          </div>
+          <ChevronRight className="w-4 h-4" style={{ color: "#b0a0d8" }} />
+        </Link>
       </section>
 
       {/* Dashboard link */}
