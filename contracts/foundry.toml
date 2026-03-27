@@ -1,15 +1,25 @@
 [profile.default]
-src = "src"
-out = "out"
-libs = ["lib"]
+src         = "src"
+out         = "out"
+libs        = ["lib"]
 solc_version = "0.8.24"
+optimizer   = true
+optimizer_runs = 200
 
-# Monad Testnet — https://docs.monad.xyz/developer-essentials/testnets (chain ID 10143)
+# Gas reports for contract sizes
+gas_reports = ["ProofOfParty"]
+
+# ── Monad Testnet ──────────────────────────────────────────────
+# Chain ID : 10143
+# RPC      : https://testnet-rpc.monad.xyz
+# Explorer : https://testnet.monadexplorer.com
+# Faucet   : https://faucet.monad.xyz
+# ──────────────────────────────────────────────────────────────
 [rpc_endpoints]
-monad = "https://testnet-rpc.monad.xyz"
+monad = "${MONAD_RPC_URL}"
 
-# Verificación en explorer (opcional)
-# [etherscan]
-# monad = { key = "${MONAD_ETHERSCAN_API_KEY}", url = "https://testnet.monadvision.com/api", chain = "10143" }
+# Explorer verification (compatible with Blockscout/Etherscan-like API)
+[etherscan]
+monad = { key = "${MONAD_VERIFIER_KEY}", url = "https://testnet.monadexplorer.com/api" }
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
