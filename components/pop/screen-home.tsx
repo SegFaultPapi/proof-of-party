@@ -6,8 +6,10 @@ import { useApp } from "@/lib/store"
 import { useRef, useState } from "react"
 import { useAccount } from "wagmi"
 
+import { toast } from "sonner"
+
 export function ScreenHome() {
-  const { wallet, connectWallet, goTo } = useApp()
+  const { wallet, goTo } = useApp()
   const { isConnected } = useAccount()
   const [isListening, setIsListening] = useState(true)
   const [isMuted, setIsMuted] = useState(true)
@@ -15,7 +17,7 @@ export function ScreenHome() {
 
   const handleClick = () => {
     if (!isConnected || !wallet) {
-      connectWallet()
+      toast.error("Por favor, conecta tu wallet con el botón superior derecho primero.")
     } else {
       goTo("events")
     }
@@ -106,10 +108,10 @@ export function ScreenHome() {
       <section className="min-h-screen w-full flex flex-col items-center justify-center relative z-10 bg-gradient-to-t from-[#0a0514] via-[#0a0514]/40 to-transparent gap-8">
         <button 
           onClick={handleClick}
-          className="relative overflow-hidden group px-14 py-6 rounded-full bg-white text-[#0a0514] font-black text-2xl tracking-[0.2em] uppercase transition-all hover:scale-105 active:scale-95 shadow-[0_0_50px_rgba(255,255,255,0.2)] hover:shadow-[0_0_80px_rgba(255,255,255,0.5)]"
+          className="relative overflow-hidden group px-14 py-6 rounded-full bg-[#836ef9] text-white font-black text-2xl tracking-[0.2em] uppercase transition-all hover:scale-105 active:scale-95 shadow-[0_0_50px_rgba(131,110,249,0.4)] hover:shadow-[0_0_80px_rgba(131,110,249,0.7)]"
         >
           <span className="relative z-10">Iniciar</span>
-          <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity blur-sm"></div>
+          <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-400 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity blur-sm"></div>
         </button>
 
         {/* Links from remote main */}
