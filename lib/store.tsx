@@ -9,6 +9,7 @@ export type Screen =
   | "kyc"
   | "checkin-confirm"
   | "checkin-success"
+  | "cruda"
   | "metrics"
   | "calculating"
   | "result"

@@ -177,10 +177,10 @@ export function ScreenCheckInSuccess() {
       {/* Actions */}
       <div className="flex flex-col gap-3">
         <button
-          onClick={() => goTo("metrics")}
+          onClick={() => goTo("cruda")}
           className="w-full font-bold rounded-2xl py-4 text-base transition-all hover:opacity-90 active:scale-95 text-white bg-gradient-purple glow-purple"
         >
-          Reportar mi cruda ahora
+          Reportar mi cruda 🎙️
         </button>
         <button
           onClick={() => goTo("events")}

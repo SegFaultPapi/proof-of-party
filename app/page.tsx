@@ -8,6 +8,7 @@ import { ScreenHome } from "@/components/pop/screen-home"
 import { ScreenEvents } from "@/components/pop/screen-events"
 import { ScreenCheckInConfirm, ScreenCheckInSuccess } from "@/components/pop/screen-checkin"
 import { ScreenMetrics, ScreenCalculating } from "@/components/pop/screen-metrics"
+import { ScreenCruda } from "@/components/pop/screen-cruda"
 import { ScreenResult } from "@/components/pop/screen-result"
 import { ScreenDashboard } from "@/components/pop/screen-dashboard"
 import { ScreenKyc } from "@/components/pop/screen-kyc"
@@ -25,6 +26,7 @@ function AppRouter() {
       {screen === "kyc" && <ScreenKyc />}
       {screen === "checkin-confirm" && <ScreenCheckInConfirm />}
       {screen === "checkin-success" && <ScreenCheckInSuccess />}
+      {screen === "cruda" && <ScreenCruda />}
       {screen === "metrics" && <ScreenMetrics />}
       {screen === "calculating" && <ScreenCalculating />}
       {screen === "result" && <ScreenResult />}
