@@ -1,6 +1,7 @@
 "use client"
 
-import { Calendar, MapPin, QrCode, ChevronLeft, CheckCircle2, XCircle } from "lucide-react"
+import Link from "next/link"
+import { Calendar, MapPin, QrCode, ChevronLeft, CheckCircle2, XCircle, Banknote, ChevronRight } from "lucide-react"
 import { useApp, MOCK_EVENTS, type Event } from "@/lib/store"
 import { cn } from "@/lib/utils"
 
@@ -169,6 +170,28 @@ export function ScreenEvents() {
           </button>
         </div>
       )}
+
+      <Link
+        href="/onramp"
+        className="mt-6 w-full rounded-2xl p-4 flex items-center justify-between gap-3 transition-all hover:shadow-md"
+        style={{ background: "#ffffff", border: "1px solid #bbf7d0", boxShadow: "0 2px 8px rgba(34,197,94,0.1)" }}
+      >
+        <div className="flex items-center gap-3 min-w-0">
+          <div
+            className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+            style={{ background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.25)" }}
+          >
+            <Banknote className="w-5 h-5" style={{ color: "#16a34a" }} />
+          </div>
+          <div className="text-left min-w-0">
+            <p className="font-semibold text-sm" style={{ color: "#14532d" }}>Fondos al seguro</p>
+            <p className="text-xs truncate" style={{ color: "#166534" }}>
+              Onramp Etherfuse sandbox · /onramp
+            </p>
+          </div>
+        </div>
+        <ChevronRight className="w-4 h-4 shrink-0" style={{ color: "#22c55e" }} />
+      </Link>
     </main>
   )
 }

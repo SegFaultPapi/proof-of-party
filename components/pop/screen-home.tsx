@@ -3,22 +3,38 @@
 import { Mic, Volume2, VolumeX, ChevronDown, ChevronRight, Banknote, Globe } from "lucide-react"
 import Link from "next/link"
 import { useApp } from "@/lib/store"
+import { monadTestnet } from "@/lib/monad-testnet"
 import { useRef, useState } from "react"
-import { useAccount } from "wagmi"
+import { useAccount, useConnect, useSwitchChain } from "wagmi"
+import { injected } from "wagmi/connectors"
 
 export function ScreenHome() {
-  const { wallet, connectWallet, goTo } = useApp()
+  const { goTo } = useApp()
   const { isConnected } = useAccount()
+  const { connectAsync, isPending: isConnecting } = useConnect()
+  const { switchChainAsync } = useSwitchChain()
   const [isListening, setIsListening] = useState(true)
   const [isMuted, setIsMuted] = useState(true)
   const videoRef = useRef<HTMLVideoElement>(null)
 
   const handleClick = () => {
-    if (!isConnected || !wallet) {
-      connectWallet()
-    } else {
+    void (async () => {
+      if (!isConnected) {
+        if (isConnecting) return
+        try {
+          await connectAsync({ connector: injected(), chainId: monadTestnet.id })
+          try {
+            await switchChainAsync({ chainId: monadTestnet.id })
+          } catch {
+            /* ignorar */
+          }
+        } catch {
+          /* usuario canceló */
+        }
+        return
+      }
       goTo("events")
-    }
+    })()
   }
 
   const toggleMute = () => {
@@ -74,32 +90,43 @@ export function ScreenHome() {
           <div className="absolute w-[240px] h-[240px] rounded-full bg-[rgba(131,110,249,0.2)] animate-ping" style={{ animationDelay: '1s', animationDuration: '3s' }} />
 
           {/* Central Orb / Button */}
-          <button className="relative z-10 w-24 h-24 rounded-full flex items-center justify-center transition-transform duration-300 ease-out group-hover:scale-110 group-active:scale-95 shadow-[0_0_60px_rgba(131,110,249,0.9)]"
-            style={{ 
+          <button
+            type="button"
+            className="relative z-10 w-24 h-24 rounded-full flex items-center justify-center transition-transform duration-300 ease-out group-hover:scale-110 group-active:scale-95 shadow-[0_0_60px_rgba(131,110,249,0.9)]"
+            style={{
               background: "linear-gradient(135deg, #836ef9 0%, #4b3f72 100%)",
               border: "2px solid rgba(255,255,255,0.3)",
-              backdropFilter: "blur(10px)"
-            }}>
+              backdropFilter: "blur(10px)",
+            }}
+          >
             <div className="absolute inset-0 rounded-full border border-white/40 blur-[2px]" />
             <Mic className="w-10 h-10 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.8)] animate-pulse" />
           </button>
-
         </div>
 
         <div className="mt-16 text-center z-10 p-4 rounded-xl bg-black/20 backdrop-blur-sm border border-white/5">
-          <p className="text-sm font-bold tracking-[0.2em] uppercase mb-2 animate-pulse" style={{ color: "#ffffff", textShadow: "0 2px 10px rgba(0,0,0,0.5)" }}>
+          <p
+            className="text-sm font-bold tracking-[0.2em] uppercase mb-2 animate-pulse"
+            style={{ color: "#ffffff", textShadow: "0 2px 10px rgba(0,0,0,0.5)" }}
+          >
             {isListening ? "Escuchando..." : "Proof of Party"}
           </p>
-          <p className="text-xs opacity-80 max-w-[200px] mx-auto leading-relaxed" style={{ color: "#d8ccfa", textShadow: "0 1px 5px rgba(0,0,0,0.5)" }}>
-            {!wallet ? "Fiesta vs Cruda" : "Toca para ir a tus eventos"}
+          <p
+            className="text-xs opacity-80 max-w-[200px] mx-auto leading-relaxed"
+            style={{ color: "#d8ccfa", textShadow: "0 1px 5px rgba(0,0,0,0.5)" }}
+          >
+            {!isConnected ? "Fiesta vs Cruda" : "Toca para ir a tus eventos"}
           </p>
         </div>
 
         {/* Scroll indicator */}
-        <button onClick={scrollToBottom} className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce opacity-70 hover:opacity-100 transition-opacity p-2">
+        <button
+          type="button"
+          onClick={scrollToBottom}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce opacity-70 hover:opacity-100 transition-opacity p-2"
+        >
           <ChevronDown className="w-8 h-8 text-white drop-shadow-lg" />
         </button>
-
       </section>
 
       {/* ====== SECTION 2: INICIAR BUTTON ====== */}
