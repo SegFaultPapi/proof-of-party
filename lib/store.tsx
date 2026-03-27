@@ -1,10 +1,12 @@
 "use client"
 
-import React, { createContext, useContext, useState, useCallback } from "react"
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react"
+import type { EtherfuseKycStatus } from "@/lib/etherfuse-client"
 
 export type Screen =
   | "home"
   | "events"
+  | "kyc"
   | "checkin-confirm"
   | "checkin-success"
   | "metrics"
@@ -60,6 +62,10 @@ export interface DashboardEntry {
 interface AppState {
   screen: Screen
   wallet: string | null
+  /** Dirección EVM completa (0x…) cuando hay wallet real; se muestra acortada en UI */
+  walletIsDemo: boolean
+  etherfuseCustomerId: string | null
+  kycStatus: EtherfuseKycStatus | null
   checkIn: CheckIn | null
   metrics: Metrics | null
   result: HangoverResult | null
@@ -69,8 +75,10 @@ interface AppState {
 
 interface AppContextType extends AppState {
   setScreen: (s: Screen) => void
-  connectWallet: () => void
+  connectWallet: () => Promise<void>
   disconnectWallet: () => void
+  setEtherfuseCustomerId: (id: string | null) => void
+  setKycStatus: (s: EtherfuseKycStatus | null) => void
   selectEvent: (e: Event) => void
   confirmCheckIn: () => void
   submitMetrics: (m: Metrics) => void
@@ -108,16 +116,35 @@ function calcHangoverScore(m: Metrics): { score: number; verdict: Verdict; payou
 
 const AppContext = createContext<AppContextType | null>(null)
 
+const DEMO_WALLET = "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb" as const
+const STORAGE_EF_CUSTOMER = "pop_ef_customer_id"
+const STORAGE_EF_WALLET = "pop_ef_wallet"
+
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AppState>({
     screen: "home",
     wallet: null,
+    walletIsDemo: false,
+    etherfuseCustomerId: null,
+    kycStatus: null,
     checkIn: null,
     metrics: null,
     result: null,
     dashboard: MOCK_DASHBOARD,
     selectedEvent: null,
   })
+
+  useEffect(() => {
+    try {
+      const cid = sessionStorage.getItem(STORAGE_EF_CUSTOMER)
+      const w = sessionStorage.getItem(STORAGE_EF_WALLET)
+      if (cid && w) {
+        setState(s => ({ ...s, etherfuseCustomerId: cid }))
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [])
 
   const setScreen = useCallback((screen: Screen) => {
     setState(s => ({ ...s, screen }))
@@ -128,13 +155,68 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }, [])
 
-  const connectWallet = useCallback(() => {
-    const mockAddr = "0x1A2b...9f4E"
-    setState(s => ({ ...s, wallet: mockAddr, screen: "events" }))
+  const connectWallet = useCallback(async () => {
+    if (typeof window !== "undefined" && window.ethereum) {
+      try {
+        const accounts = (await window.ethereum.request({ method: "eth_requestAccounts" })) as string[]
+        const addr = accounts?.[0]
+        if (addr && /^0x[a-fA-F0-9]{40}$/.test(addr)) {
+          let restoredCustomer: string | null = null
+          try {
+            const sw = sessionStorage.getItem(STORAGE_EF_WALLET)
+            const c = sessionStorage.getItem(STORAGE_EF_CUSTOMER)
+            if (sw && c && sw.toLowerCase() === addr.toLowerCase()) restoredCustomer = c
+          } catch {
+            /* ignore */
+          }
+          setState(s => ({
+            ...s,
+            wallet: addr,
+            walletIsDemo: false,
+            etherfuseCustomerId: restoredCustomer ?? s.etherfuseCustomerId,
+            screen: "events",
+          }))
+          return
+        }
+      } catch {
+        /* usuario rechazó o error */
+      }
+    }
+    setState(s => ({
+      ...s,
+      wallet: DEMO_WALLET,
+      walletIsDemo: true,
+      screen: "events",
+    }))
+  }, [])
+
+  const setEtherfuseCustomerId = useCallback((id: string | null) => {
+    setState(s => ({ ...s, etherfuseCustomerId: id }))
+  }, [])
+
+  const setKycStatus = useCallback((kycStatus: EtherfuseKycStatus | null) => {
+    setState(s => ({ ...s, kycStatus }))
   }, [])
 
   const disconnectWallet = useCallback(() => {
-    setState(s => ({ ...s, wallet: null, screen: "home", checkIn: null, metrics: null, result: null, selectedEvent: null }))
+    try {
+      sessionStorage.removeItem(STORAGE_EF_CUSTOMER)
+      sessionStorage.removeItem(STORAGE_EF_WALLET)
+    } catch {
+      /* ignore */
+    }
+    setState(s => ({
+      ...s,
+      wallet: null,
+      walletIsDemo: false,
+      etherfuseCustomerId: null,
+      kycStatus: null,
+      screen: "home",
+      checkIn: null,
+      metrics: null,
+      result: null,
+      selectedEvent: null,
+    }))
   }, [])
 
   const selectEvent = useCallback((event: Event) => {
@@ -200,7 +282,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   return (
-    <AppContext.Provider value={{ ...state, setScreen, connectWallet, disconnectWallet, selectEvent, confirmCheckIn, submitMetrics, claimPayout, goTo }}>
+    <AppContext.Provider
+      value={{
+        ...state,
+        setScreen,
+        connectWallet,
+        disconnectWallet,
+        setEtherfuseCustomerId,
+        setKycStatus,
+        selectEvent,
+        confirmCheckIn,
+        submitMetrics,
+        claimPayout,
+        goTo,
+      }}
+    >
       {children}
     </AppContext.Provider>
   )

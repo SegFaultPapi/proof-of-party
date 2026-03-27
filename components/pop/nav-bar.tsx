@@ -1,11 +1,11 @@
 "use client"
 
-import { Zap } from "lucide-react"
+import { Zap, Shield } from "lucide-react"
 import { useApp } from "@/lib/store"
 import { WalletButton } from "./wallet-button"
 
 export function NavBar() {
-  const { goTo } = useApp()
+  const { goTo, wallet } = useApp()
 
   return (
     <header
@@ -34,7 +34,21 @@ export function NavBar() {
             Proof<span style={{ color: "#836ef9" }}>of</span>Party
           </span>
         </button>
-        <WalletButton compact />
+        <div className="flex items-center gap-2">
+          {wallet && (
+            <button
+              type="button"
+              onClick={() => goTo("kyc")}
+              className="flex items-center justify-center w-9 h-9 rounded-xl transition-colors"
+              style={{ background: "#ede9fe", color: "#5b4fc9" }}
+              aria-label="KYC Etherfuse"
+              title="KYC Etherfuse"
+            >
+              <Shield className="w-4 h-4" />
+            </button>
+          )}
+          <WalletButton compact />
+        </div>
       </div>
     </header>
   )

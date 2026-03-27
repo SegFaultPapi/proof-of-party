@@ -32,7 +32,7 @@ const steps = [
 ]
 
 export function ScreenHome() {
-  const { wallet, connectWallet, goTo } = useApp()
+  const { wallet, goTo } = useApp()
 
   return (
     <main className="min-h-screen flex flex-col" style={{ background: "#f8f5ff" }}>

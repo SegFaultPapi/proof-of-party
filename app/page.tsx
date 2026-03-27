@@ -8,6 +8,7 @@ import { ScreenCheckInConfirm, ScreenCheckInSuccess } from "@/components/pop/scr
 import { ScreenMetrics, ScreenCalculating } from "@/components/pop/screen-metrics"
 import { ScreenResult } from "@/components/pop/screen-result"
 import { ScreenDashboard } from "@/components/pop/screen-dashboard"
+import { ScreenKyc } from "@/components/pop/screen-kyc"
 
 function AppRouter() {
   const { screen } = useApp()
@@ -19,6 +20,7 @@ function AppRouter() {
       {showNav && <NavBar />}
       {screen === "home" && <ScreenHome />}
       {screen === "events" && <ScreenEvents />}
+      {screen === "kyc" && <ScreenKyc />}
       {screen === "checkin-confirm" && <ScreenCheckInConfirm />}
       {screen === "checkin-success" && <ScreenCheckInSuccess />}
       {screen === "metrics" && <ScreenMetrics />}

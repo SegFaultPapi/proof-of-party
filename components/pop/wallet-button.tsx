@@ -3,7 +3,7 @@
 import { Wallet, ChevronDown, LogOut, Copy } from "lucide-react"
 import { useState } from "react"
 import { useApp } from "@/lib/store"
-import { cn } from "@/lib/utils"
+import { cn, formatShortAddress } from "@/lib/utils"
 
 interface WalletButtonProps {
   compact?: boolean
@@ -11,13 +11,13 @@ interface WalletButtonProps {
 }
 
 export function WalletButton({ compact, className }: WalletButtonProps) {
-  const { wallet, connectWallet, disconnectWallet } = useApp()
+  const { wallet, walletIsDemo, connectWallet, disconnectWallet } = useApp()
   const [open, setOpen] = useState(false)
 
   if (!wallet) {
     return (
       <button
-        onClick={connectWallet}
+        onClick={() => void connectWallet()}
         className={cn(
           "flex items-center gap-2 font-semibold rounded-xl px-4 py-2 text-sm transition-all active:scale-95 text-white bg-gradient-purple glow-purple-sm hover:opacity-90",
           compact && "px-3 py-1.5 text-xs",
@@ -51,7 +51,14 @@ export function WalletButton({ compact, className }: WalletButtonProps) {
         >
           <div className="w-2 h-2 rounded-full bg-white" />
         </div>
-        <span className="font-mono text-xs" style={{ color: "#1a0f3c" }}>{wallet}</span>
+        <span className="font-mono text-xs" style={{ color: "#1a0f3c" }}>
+          {formatShortAddress(wallet)}
+          {walletIsDemo && (
+            <span className="ml-1 text-[10px] font-sans font-normal" style={{ color: "#a78bfa" }}>
+              (demo)
+            </span>
+          )}
+        </span>
         <ChevronDown
           className={cn("w-3.5 h-3.5 transition-transform", open && "rotate-180")}
           style={{ color: "#7c6bb5" }}
