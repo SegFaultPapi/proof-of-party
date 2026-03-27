@@ -60,37 +60,56 @@ export function ScreenHome() {
       {/* ── SECTION 1: Hero ─────────────────────────────────── */}
       <section className="min-h-screen w-full flex flex-col items-center justify-center relative z-10 px-6">
 
-        {/* Logo */}
-        <img src="/LogoPOP.png" alt="Proof of Party" className="h-20 w-auto object-contain mb-6 drop-shadow-[0_0_30px_rgba(131,110,249,0.6)]" />
+        {/* Logo with stronger glow */}
+        <img 
+          src="/LogoPOP.png" 
+          alt="Proof of Party" 
+          className="h-24 w-auto object-contain mb-8 drop-shadow-[0_0_40px_rgba(131,110,249,0.7)] hover:scale-105 transition-transform" 
+        />
 
-        {/* Title */}
-        <h1 className="text-4xl font-black text-center leading-tight mb-3 tracking-tight">
-          <span className="text-gradient-purple">Proof</span>
-          <span style={{ color: "#ffffff" }}> of </span>
-          <span className="text-gradient-purple">Party</span>
-        </h1>
-        <p className="text-base text-center mb-10 max-w-[260px] leading-relaxed" style={{ color: "#a594fb" }}>
-          Demuestra tu cruda. Ordena tu desayuno. Cobra on-chain.
-        </p>
+        {/* Title: High Impact Copy */}
+        <div className="text-center mb-6 space-y-2">
+          <h1 className="text-5xl md:text-7xl font-black leading-[1.1] tracking-tighter drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
+            <span className="text-gradient-purple">Fiesta</span>
+            <span style={{ color: "#ffffff" }}> Tonight,</span>
+            <br />
+            <span className="text-gradient-purple">Breakfast</span>
+            <span style={{ color: "#ffffff" }}> Solved.</span>
+          </h1>
+          
+          <p 
+            className="text-lg md:text-xl font-medium max-w-[400px] mx-auto leading-snug drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+            style={{ color: "#d8ccfa" }}
+          >
+            Lock your USDC tonight. Prove your hangover tomorrow. 
+            <span className="block mt-2 font-bold text-white opacity-90">Automate your recovery on Monad.</span>
+          </p>
+        </div>
 
-        {/* CTA */}
+        {/* CTA: Engage the user */}
         <button
           onClick={handleClick}
-          className="relative overflow-hidden group px-12 py-5 rounded-full font-black text-xl tracking-[0.15em] uppercase transition-all hover:scale-105 active:scale-95"
+          className="relative overflow-hidden group px-14 py-6 rounded-full font-black text-xl tracking-[0.2em] uppercase transition-all hover:scale-105 active:scale-95 mt-4"
           style={{
             background: "linear-gradient(135deg, #836ef9 0%, #5b4ad4 100%)",
-            boxShadow: "0 0 40px rgba(131,110,249,0.45), 0 0 80px rgba(131,110,249,0.15)",
+            boxShadow: "0 0 50px rgba(131,110,249,0.5), 0 10px 30px rgba(0,0,0,0.5)",
             color: "#ffffff",
           }}
         >
-          <span className="relative z-10">Iniciar</span>
-          <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors rounded-full" />
+          <span className="relative z-10">Enroll in the Party</span>
+          <div className="absolute inset-0 bg-white/0 group-hover:bg-white/20 transition-colors rounded-full" />
+          
+          {/* Subtle animated border glow */}
+          <div className="absolute inset-0 rounded-full border border-white/30 group-hover:border-white/60 transition-colors" />
         </button>
 
-        {/* Scroll down */}
+        {/* Scroll down hint */}
         <button onClick={scrollToBottom}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce opacity-50 hover:opacity-100 transition-opacity p-2">
-          <ChevronDown className="w-7 h-7 text-white" />
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 animate-bounce opacity-40 hover:opacity-100 transition-opacity p-2">
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-white mb-1">Explore</span>
+            <ChevronDown className="w-6 h-6 text-white" />
+          </div>
         </button>
 
       </section>
