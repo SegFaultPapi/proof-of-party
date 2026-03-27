@@ -10,6 +10,11 @@ monad-mcp-tutorial/
 /.next/
 /out/
 
+# Foundry (contracts/)
+contracts/cache/
+contracts/out/
+contracts/broadcast/
+
 # production
 /build
 
