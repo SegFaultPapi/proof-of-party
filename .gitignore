@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+.pnpm-store/
 
 # Monad MCP tutorial (clon local; ver ~/.cursor/mcp.json → monad-mcp)
 monad-mcp-tutorial/
@@ -32,4 +33,3 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts.pnpm-store
