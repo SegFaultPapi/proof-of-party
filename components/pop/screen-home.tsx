@@ -1,177 +1,161 @@
 "use client"
 
+import { Mic, Volume2, VolumeX, ChevronDown, ChevronRight, Banknote, Globe } from "lucide-react"
 import Link from "next/link"
-import { ArrowRight, Zap, Moon, DollarSign, ChevronRight, Globe, Banknote } from "lucide-react"
-import { useAccount } from "wagmi"
 import { useApp } from "@/lib/store"
-import { WalletButton } from "./wallet-button"
-
-const steps = [
-  {
-    icon: Zap,
-    label: "Check-in",
-    desc: "Escanea el QR del evento con tu wallet",
-    iconBg: "rgba(131, 110, 249, 0.12)",
-    iconBorder: "rgba(131, 110, 249, 0.25)",
-    iconColor: "#836ef9",
-  },
-  {
-    icon: Moon,
-    label: "Reporta",
-    desc: "Dinos como amaneciste al dia siguiente",
-    iconBg: "rgba(131, 110, 249, 0.08)",
-    iconBorder: "rgba(131, 110, 249, 0.18)",
-    iconColor: "#a594fb",
-  },
-  {
-    icon: DollarSign,
-    label: "Cobra",
-    desc: "Recibe tu recompensa automatica en USDC",
-    iconBg: "rgba(34, 197, 94, 0.08)",
-    iconBorder: "rgba(34, 197, 94, 0.2)",
-    iconColor: "#16a34a",
-  },
-]
+import { useRef, useState } from "react"
+import { useAccount } from "wagmi"
 
 export function ScreenHome() {
+  const { wallet, connectWallet, goTo } = useApp()
   const { isConnected } = useAccount()
-  const { goTo } = useApp()
+  const [isListening, setIsListening] = useState(true)
+  const [isMuted, setIsMuted] = useState(true)
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  const handleClick = () => {
+    if (!isConnected || !wallet) {
+      connectWallet()
+    } else {
+      goTo("events")
+    }
+  }
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !videoRef.current.muted
+      setIsMuted(videoRef.current.muted)
+    }
+  }
+
+  const scrollToBottom = () => {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
+  }
 
   return (
-    <main className="min-h-screen flex flex-col" style={{ background: "#f8f5ff" }}>
-      {/* Hero */}
-      <section className="flex-1 flex flex-col items-center justify-center px-6 pt-16 pb-10 relative overflow-hidden">
-        {/* Soft glow orbs */}
-        <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(ellipse, rgba(131,110,249,0.12) 0%, transparent 70%)", filter: "blur(40px)" }}
+    <main className="w-full relative" style={{ background: "#0a0514" }}>
+      
+      {/* Background Video (Fixed so it stays while scrolling) */}
+      <video
+        ref={videoRef}
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="fixed inset-0 w-full h-full object-cover opacity-60 pointer-events-none z-0"
+      >
+        <source src="/VideoLanding.mp4" type="video/mp4" />
+      </video>
+
+      {/* Sound Toggle Button (Fixed) */}
+      <button 
+        onClick={toggleMute} 
+        className="fixed top-6 right-6 z-50 p-3 rounded-full bg-black/40 border border-white/10 backdrop-blur-md transition-all hover:bg-black/60 text-white"
+        aria-label={isMuted ? "Activar sonido" : "Silenciar sonido"}
+      >
+        {isMuted ? <VolumeX className="w-5 h-5 opacity-70" /> : <Volume2 className="w-5 h-5" />}
+      </button>
+
+      {/* ====== SECTION 1: AI ORB ====== */}
+      <section className="min-h-screen w-full flex flex-col items-center justify-center relative z-10">
+        
+        {/* Background glow for the orb */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none opacity-40 blur-[80px]"
+          style={{
+            background: "radial-gradient(circle, rgba(131,110,249,0.5) 0%, rgba(0,0,0,0) 70%)"
+          }}
         />
 
-        {/* Live badge */}
-        <div
-          className="mb-6 flex items-center gap-2 px-3.5 py-1.5 rounded-full"
-          style={{ background: "#ffffff", border: "1px solid #d8ccfa", boxShadow: "0 2px 8px rgba(131,110,249,0.1)" }}
-        >
-          <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-          <span className="text-xs font-medium" style={{ color: "#7c6bb5" }}>En vivo en Monad Testnet</span>
-        </div>
+        <div className="relative flex items-center justify-center group cursor-pointer" onClick={handleClick}>
+          
+          {/* Animated Rings */}
+          <div className="absolute w-[120px] h-[120px] rounded-full bg-[rgba(131,110,249,0.7)] animate-ping opacity-80" />
+          <div className="absolute w-[180px] h-[180px] rounded-full bg-[rgba(131,110,249,0.4)] animate-ping" style={{ animationDelay: '0.5s', animationDuration: '3s' }} />
+          <div className="absolute w-[240px] h-[240px] rounded-full bg-[rgba(131,110,249,0.2)] animate-ping" style={{ animationDelay: '1s', animationDuration: '3s' }} />
 
-        {/* Logo */}
-        <div
-          className="mb-4 w-16 h-16 rounded-2xl flex items-center justify-center glow-purple"
-          style={{ background: "linear-gradient(135deg, #836ef9 0%, #6b56e8 100%)" }}
-        >
-          <Zap className="w-8 h-8 text-white" fill="white" />
-        </div>
-
-        {/* Title */}
-        <h1 className="text-4xl font-bold text-center leading-tight text-balance mb-3">
-          <span className="text-gradient-purple">Proof</span>
-          <span style={{ color: "#1a0f3c" }}> of </span>
-          <span className="text-gradient-purple">Party</span>
-        </h1>
-        <p className="text-base text-center text-balance mb-2 leading-relaxed max-w-xs" style={{ color: "#4b3f72" }}>
-          Tu cruda,{" "}
-          <span className="font-bold" style={{ color: "#1a0f3c" }}>tu recompensa.</span>
-        </p>
-        <p className="text-sm text-center text-balance mb-8 max-w-[260px]" style={{ color: "#7c6bb5" }}>
-          Check-in on-chain en eventos Web3 y cobra en USDC.
-        </p>
-
-        {/* CTA */}
-        {isConnected ? (
-          <button
-            onClick={() => goTo("events")}
-            className="flex items-center gap-2.5 font-bold rounded-2xl px-8 py-4 text-base transition-all w-full max-w-xs justify-center text-white bg-gradient-purple glow-purple hover:opacity-90 active:scale-95"
-          >
-            Ver eventos
-            <ArrowRight className="w-5 h-5" />
+          {/* Central Orb / Button */}
+          <button className="relative z-10 w-24 h-24 rounded-full flex items-center justify-center transition-transform duration-300 ease-out group-hover:scale-110 group-active:scale-95 shadow-[0_0_60px_rgba(131,110,249,0.9)]"
+            style={{ 
+              background: "linear-gradient(135deg, #836ef9 0%, #4b3f72 100%)",
+              border: "2px solid rgba(255,255,255,0.3)",
+              backdropFilter: "blur(10px)"
+            }}>
+            <div className="absolute inset-0 rounded-full border border-white/40 blur-[2px]" />
+            <Mic className="w-10 h-10 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.8)] animate-pulse" />
           </button>
-        ) : (
-          <WalletButton className="w-full max-w-xs justify-center py-4 text-base rounded-2xl font-bold" />
-        )}
 
-        <p className="mt-4 text-xs text-center" style={{ color: "#b0a0d8" }}>
-          Sin registro. Solo tu wallet.
-        </p>
+        </div>
+
+        <div className="mt-16 text-center z-10 p-4 rounded-xl bg-black/20 backdrop-blur-sm border border-white/5">
+          <p className="text-sm font-bold tracking-[0.2em] uppercase mb-2 animate-pulse" style={{ color: "#ffffff", textShadow: "0 2px 10px rgba(0,0,0,0.5)" }}>
+            {isListening ? "Escuchando..." : "Proof of Party"}
+          </p>
+          <p className="text-xs opacity-80 max-w-[200px] mx-auto leading-relaxed" style={{ color: "#d8ccfa", textShadow: "0 1px 5px rgba(0,0,0,0.5)" }}>
+            {!wallet ? "Fiesta vs Cruda" : "Toca para ir a tus eventos"}
+          </p>
+        </div>
+
+        {/* Scroll indicator */}
+        <button onClick={scrollToBottom} className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce opacity-70 hover:opacity-100 transition-opacity p-2">
+          <ChevronDown className="w-8 h-8 text-white drop-shadow-lg" />
+        </button>
+
       </section>
 
-      {/* How it works */}
-      <section className="px-5 pb-8">
-        <h2 className="text-xs font-semibold uppercase tracking-widest text-center mb-5" style={{ color: "#b0a0d8" }}>
-          Como funciona
-        </h2>
-        <div className="flex flex-col gap-3 max-w-md mx-auto">
-          {steps.map((step, i) => (
-            <div
-              key={step.label}
-              className="rounded-2xl p-4 flex items-center gap-4 card-shadow"
-              style={{ background: "#ffffff", border: "1px solid #e8e0ff" }}
-            >
+      {/* ====== SECTION 2: INICIAR BUTTON ====== */}
+      <section className="min-h-screen w-full flex flex-col items-center justify-center relative z-10 bg-gradient-to-t from-[#0a0514] via-[#0a0514]/40 to-transparent gap-8">
+        <button 
+          onClick={handleClick}
+          className="relative overflow-hidden group px-14 py-6 rounded-full bg-white text-[#0a0514] font-black text-2xl tracking-[0.2em] uppercase transition-all hover:scale-105 active:scale-95 shadow-[0_0_50px_rgba(255,255,255,0.2)] hover:shadow-[0_0_80px_rgba(255,255,255,0.5)]"
+        >
+          <span className="relative z-10">Iniciar</span>
+          <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity blur-sm"></div>
+        </button>
+
+        {/* Links from remote main */}
+        <div className="flex flex-col gap-4 w-full max-w-sm px-6">
+          <Link
+            href="/onramp"
+            className="w-full rounded-2xl p-4 flex items-center justify-between transition-all hover:shadow-md"
+            style={{ background: "rgba(20, 10, 35, 0.6)", border: "1px solid rgba(131, 110, 249, 0.2)", boxShadow: "0 2px 8px rgba(131,110,249,0.08)" }}
+          >
+            <div className="flex items-center gap-3">
               <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: step.iconBg, border: `1px solid ${step.iconBorder}` }}
+                className="w-9 h-9 rounded-xl flex items-center justify-center"
+                style={{ background: "rgba(34, 197, 94, 0.1)", border: "1px solid rgba(34, 197, 94, 0.25)" }}
               >
-                <step.icon className="w-5 h-5" style={{ color: step.iconColor }} />
+                <Banknote className="w-4 h-4" style={{ color: "#16a34a" }} />
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <span className="text-xs font-mono" style={{ color: "#c4b5fd" }}>0{i + 1}</span>
-                  <span className="font-semibold text-sm" style={{ color: "#1a0f3c" }}>{step.label}</span>
-                </div>
-                <p className="text-xs leading-relaxed" style={{ color: "#7c6bb5" }}>{step.desc}</p>
+              <div className="text-left">
+                <p className="text-sm font-semibold" style={{ color: "#ffffff" }}>Fondos al seguro (onramp)</p>
+                <p className="text-xs" style={{ color: "#a594fb" }}>Probar Etherfuse sandbox · Monad</p>
               </div>
-              <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: "#c4b5fd" }} />
             </div>
-          ))}
+            <ChevronRight className="w-4 h-4" style={{ color: "#836ef9" }} />
+          </Link>
+
+          <button
+            onClick={() => goTo("dashboard")}
+            className="w-full rounded-2xl p-4 flex items-center justify-between transition-all hover:shadow-md"
+            style={{ background: "rgba(20, 10, 35, 0.6)", border: "1px solid rgba(131, 110, 249, 0.2)", boxShadow: "0 2px 8px rgba(131,110,249,0.08)" }}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="w-9 h-9 rounded-xl flex items-center justify-center"
+                style={{ background: "rgba(131,110,249,0.1)", border: "1px solid rgba(131,110,249,0.2)" }}
+              >
+                <Globe className="w-4 h-4" style={{ color: "#836ef9" }} />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-semibold" style={{ color: "#ffffff" }}>Dashboard publico</p>
+                <p className="text-xs" style={{ color: "#a594fb" }}>Ver pagos liquidados</p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4" style={{ color: "#836ef9" }} />
+          </button>
         </div>
       </section>
 
-      {/* Onramp test */}
-      <section className="px-5 pb-4 max-w-md mx-auto w-full">
-        <Link
-          href="/onramp"
-          className="w-full rounded-2xl p-4 flex items-center justify-between transition-all hover:shadow-md block"
-          style={{ background: "#ffffff", border: "1px solid #d8ccfa", boxShadow: "0 2px 8px rgba(131,110,249,0.08)" }}
-        >
-          <div className="flex items-center gap-3">
-            <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center"
-              style={{ background: "rgba(34, 197, 94, 0.1)", border: "1px solid rgba(34, 197, 94, 0.25)" }}
-            >
-              <Banknote className="w-4 h-4" style={{ color: "#16a34a" }} />
-            </div>
-            <div className="text-left">
-              <p className="text-sm font-semibold" style={{ color: "#1a0f3c" }}>Fondos al seguro (onramp)</p>
-              <p className="text-xs" style={{ color: "#7c6bb5" }}>Probar Etherfuse sandbox · Monad</p>
-            </div>
-          </div>
-          <ChevronRight className="w-4 h-4" style={{ color: "#b0a0d8" }} />
-        </Link>
-      </section>
-
-      {/* Dashboard link */}
-      <section className="px-5 pb-10 max-w-md mx-auto w-full">
-        <button
-          onClick={() => goTo("dashboard")}
-          className="w-full rounded-2xl p-4 flex items-center justify-between transition-all hover:shadow-md"
-          style={{ background: "#ffffff", border: "1px solid #d8ccfa", boxShadow: "0 2px 8px rgba(131,110,249,0.08)" }}
-        >
-          <div className="flex items-center gap-3">
-            <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center"
-              style={{ background: "rgba(131,110,249,0.1)", border: "1px solid rgba(131,110,249,0.2)" }}
-            >
-              <Globe className="w-4 h-4" style={{ color: "#836ef9" }} />
-            </div>
-            <div className="text-left">
-              <p className="text-sm font-semibold" style={{ color: "#1a0f3c" }}>Dashboard publico</p>
-              <p className="text-xs" style={{ color: "#7c6bb5" }}>5 pagos liquidados</p>
-            </div>
-          </div>
-          <ChevronRight className="w-4 h-4" style={{ color: "#b0a0d8" }} />
-        </button>
-      </section>
     </main>
   )
 }

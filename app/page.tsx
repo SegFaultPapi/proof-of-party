@@ -18,7 +18,7 @@ function AppRouter() {
   const showNav = screen !== "home"
 
   return (
-    <div className="min-h-screen" style={{ background: "#f8f5ff" }}>
+    <div className="min-h-screen" style={{ background: "var(--background)" }}>
       {showNav && <NavBar />}
       {screen === "home" && <ScreenHome />}
       {screen === "events" && <ScreenEvents />}

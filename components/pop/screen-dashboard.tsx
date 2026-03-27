@@ -34,7 +34,7 @@ export function ScreenDashboard() {
       iconBg: "rgba(131,110,249,0.1)",
       iconBorder: "rgba(131,110,249,0.22)",
       iconColor: "#836ef9",
-      valueColor: "#1a0f3c",
+      valueColor: "#ffffff",
     },
     {
       icon: CheckCircle,
@@ -43,7 +43,7 @@ export function ScreenDashboard() {
       iconBg: "rgba(131,110,249,0.1)",
       iconBorder: "rgba(131,110,249,0.22)",
       iconColor: "#836ef9",
-      valueColor: "#1a0f3c",
+      valueColor: "#ffffff",
     },
     {
       icon: DollarSign,
@@ -57,28 +57,28 @@ export function ScreenDashboard() {
   ]
 
   return (
-    <main className="min-h-screen pt-20 pb-10 max-w-md mx-auto" style={{ background: "#f8f5ff" }}>
+    <main className="min-h-screen pt-20 pb-10 max-w-md mx-auto" style={{ background: "#0a0514" }}>
       {/* Header */}
       <div className="px-5 flex items-center gap-3 mb-6">
         <button
           onClick={() => goTo("home")}
           className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors hover:bg-[#e8e0ff]"
-          style={{ background: "#ffffff", border: "1px solid #d8ccfa" }}
+          style={{ background: "var(--surface-1)", border: "1px solid #d8ccfa" }}
         >
-          <ChevronLeft className="w-4 h-4" style={{ color: "#1a0f3c" }} />
+          <ChevronLeft className="w-4 h-4" style={{ color: "#ffffff" }} />
         </button>
         <div className="flex-1">
-          <h1 className="font-bold text-xl" style={{ color: "#1a0f3c" }}>Dashboard</h1>
-          <p className="text-xs" style={{ color: "#7c6bb5" }}>Actividad en tiempo real</p>
+          <h1 className="font-bold text-xl" style={{ color: "#ffffff" }}>Dashboard</h1>
+          <p className="text-xs" style={{ color: "#a594fb" }}>Actividad en tiempo real</p>
         </div>
         <button
           onClick={handleRefresh}
           className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors hover:bg-[#e8e0ff]"
-          style={{ background: "#ffffff", border: "1px solid #d8ccfa" }}
+          style={{ background: "var(--surface-1)", border: "1px solid #d8ccfa" }}
         >
           <RefreshCw
             className={cn("w-4 h-4 transition-colors", refreshing ? "animate-spin" : "")}
-            style={{ color: refreshing ? "#836ef9" : "#7c6bb5" }}
+            style={{ color: refreshing ? "#836ef9" : "#a594fb" }}
           />
         </button>
       </div>
@@ -89,7 +89,7 @@ export function ScreenDashboard() {
           <div
             key={stat.label}
             className="rounded-2xl p-3.5 text-center card-shadow"
-            style={{ background: "#ffffff", border: "1px solid #e8e0ff" }}
+            style={{ background: "var(--surface-1)", border: "1px solid #e8e0ff" }}
           >
             <div
               className="w-8 h-8 rounded-lg flex items-center justify-center mx-auto mb-2"
@@ -98,7 +98,7 @@ export function ScreenDashboard() {
               <stat.icon className="w-4 h-4" style={{ color: stat.iconColor }} />
             </div>
             <p className="text-xl font-bold tabular-nums" style={{ color: stat.valueColor }}>{stat.value}</p>
-            <p className="text-[10px] leading-tight" style={{ color: "#7c6bb5" }}>{stat.label}</p>
+            <p className="text-[10px] leading-tight" style={{ color: "#a594fb" }}>{stat.label}</p>
           </div>
         ))}
       </div>
@@ -115,7 +115,7 @@ export function ScreenDashboard() {
             )}
             style={
               filter !== f
-                ? { background: "#ffffff", border: "1px solid #d8ccfa", color: "#7c6bb5" }
+                ? { background: "var(--surface-1)", border: "1px solid #d8ccfa", color: "#a594fb" }
                 : {}
             }
           >
@@ -129,22 +129,22 @@ export function ScreenDashboard() {
         {filtered.length === 0 && (
           <div
             className="rounded-2xl p-8 text-center card-shadow"
-            style={{ background: "#ffffff", border: "1px solid #e8e0ff" }}
+            style={{ background: "var(--surface-1)", border: "1px solid #e8e0ff" }}
           >
-            <p className="text-sm" style={{ color: "#7c6bb5" }}>Sin actividad aun</p>
+            <p className="text-sm" style={{ color: "#a594fb" }}>Sin actividad aun</p>
           </div>
         )}
         {filtered.map((entry, i) => (
           <div
             key={i}
             className="rounded-2xl p-4 flex flex-col gap-2.5 card-shadow"
-            style={{ background: "#ffffff", border: "1px solid #e8e0ff" }}
+            style={{ background: "var(--surface-1)", border: "1px solid #e8e0ff" }}
           >
             {/* Top row */}
             <div className="flex items-start justify-between gap-2">
               <div>
                 <p className="font-mono text-xs mb-0.5" style={{ color: "#b0a0d8" }}>{entry.wallet}</p>
-                <p className="font-semibold text-sm leading-tight" style={{ color: "#1a0f3c" }}>{entry.event}</p>
+                <p className="font-semibold text-sm leading-tight" style={{ color: "#ffffff" }}>{entry.event}</p>
               </div>
               <span
                 className="flex-shrink-0 text-xs font-bold px-2.5 py-1 rounded-full"
@@ -164,10 +164,10 @@ export function ScreenDashboard() {
               style={{ borderTop: "1px solid #e8e0ff" }}
             >
               <div className="flex items-center gap-2">
-                <span className="font-bold text-sm tabular-nums" style={{ color: "#1a0f3c" }}>
+                <span className="font-bold text-sm tabular-nums" style={{ color: "#ffffff" }}>
                   {entry.amount.toFixed(3)} USDC
                 </span>
-                <span className="text-[10px]" style={{ color: "#c4b5fd" }}>{entry.timestamp}</span>
+                <span className="text-[10px]" style={{ color: "#836ef9" }}>{entry.timestamp}</span>
               </div>
               <a
                 href="#"
@@ -186,7 +186,7 @@ export function ScreenDashboard() {
 
       {/* Monad footer */}
       <div className="px-5 mt-6">
-        <div className="flex items-center justify-center gap-2 text-xs" style={{ color: "#c4b5fd" }}>
+        <div className="flex items-center justify-center gap-2 text-xs" style={{ color: "#836ef9" }}>
           <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#836ef9" }} />
           Datos en vivo desde Monad Testnet
         </div>

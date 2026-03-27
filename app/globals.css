@@ -3,38 +3,38 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ─── Proof of Party — Light + Monad Purple Theme ──────────────────
-   Background:  #f8f5ff  (very light lavender white)
-   Surface-1:   #ffffff  (white cards)
-   Surface-2:   #f0ebff  (light purple tint panels)
-   Surface-3:   #e8e0ff  (slightly deeper purple tint hover)
+/* ─── Proof of Party — Dark + Monad Purple Theme ──────────────────
+   Background:  #0a0514  (deep dark purple/black)
+   Surface-1:   #1A0F3C  (dark translucent cards)
+   Surface-2:   #2D195A  (interactive purple tint panels)
+   Surface-3:   #412378  (hover states)
    Primary:     #836EF9  (Monad purple)
    Purple-L:    #a594fb  (lighter Monad purple)
    Purple-D:    #6b56e8  (deeper Monad purple)
-   Border:      #d8ccfa  (soft purple border)
-   Muted-FG:    #7c6bb5  (muted purple text)
-   Foreground:  #1a0f3c  (very dark purple for text)
+   Border:      rgba(131, 110, 249, 0.2)
+   Muted-FG:    #a594fb  (muted purple text)
+   Foreground:  #ffffff  (white text)
 ──────────────────────────────────────────────────────────────────── */
 
 :root {
-  --background: #f8f5ff;
-  --foreground: #1a0f3c;
-  --card: #ffffff;
-  --card-foreground: #1a0f3c;
-  --popover: #ffffff;
-  --popover-foreground: #1a0f3c;
+  --background: #0a0514;
+  --foreground: #ffffff;
+  --card: rgba(20, 10, 35, 0.6);
+  --card-foreground: #ffffff;
+  --popover: #0a0514;
+  --popover-foreground: #ffffff;
   --primary: #836ef9;
   --primary-foreground: #ffffff;
-  --secondary: #f0ebff;
-  --secondary-foreground: #1a0f3c;
-  --muted: #f0ebff;
-  --muted-foreground: #7c6bb5;
-  --accent: #e8e0ff;
-  --accent-foreground: #1a0f3c;
+  --secondary: rgba(131, 110, 249, 0.15);
+  --secondary-foreground: #d8ccfa;
+  --muted: rgba(255, 255, 255, 0.05);
+  --muted-foreground: #a594fb;
+  --accent: rgba(131, 110, 249, 0.25);
+  --accent-foreground: #ffffff;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --border: #d8ccfa;
-  --input: #f0ebff;
+  --border: rgba(131, 110, 249, 0.2);
+  --input: rgba(255, 255, 255, 0.05);
   --ring: #836ef9;
   --radius: 0.875rem;
 
@@ -43,10 +43,10 @@
   --monad-purple-light: #a594fb;
   --monad-purple-deep: #6b56e8;
   --monad-purple-dim: #7c6bb5;
-  --monad-purple-glow: rgba(131, 110, 249, 0.25);
-  --surface-1: #ffffff;
-  --surface-2: #f0ebff;
-  --surface-3: #e8e0ff;
+  --monad-purple-glow: rgba(131, 110, 249, 0.6);
+  --surface-1: rgba(26, 15, 60, 0.6);
+  --surface-2: rgba(45, 25, 90, 0.5);
+  --surface-3: rgba(65, 35, 120, 0.4);
 }
 
 @theme inline {
@@ -84,12 +84,12 @@
     @apply border-border outline-ring/50;
   }
   html {
-    color-scheme: light;
+    color-scheme: dark;
   }
   body {
     @apply font-sans antialiased;
-    background-color: #f8f5ff;
-    color: #1a0f3c;
+    background-color: var(--background);
+    color: var(--foreground);
   }
 }
 

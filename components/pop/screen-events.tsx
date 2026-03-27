@@ -17,7 +17,7 @@ function EventCard({ event, onSelect }: { event: Event; onSelect: (e: Event) => 
         isClosed && "opacity-60"
       )}
       style={{
-        background: "#ffffff",
+        background: "var(--surface-1)",
         border: isChecked
           ? "1px solid rgba(131, 110, 249, 0.45)"
           : "1px solid #e8e0ff",
@@ -26,7 +26,7 @@ function EventCard({ event, onSelect }: { event: Event; onSelect: (e: Event) => 
     >
       {/* Header */}
       <div className="flex items-start justify-between gap-2">
-        <h3 className="font-bold text-base leading-snug" style={{ color: "#1a0f3c" }}>{event.name}</h3>
+        <h3 className="font-bold text-base leading-snug" style={{ color: "#ffffff" }}>{event.name}</h3>
         {isActive && (
           <span
             className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full flex-shrink-0"
@@ -39,7 +39,7 @@ function EventCard({ event, onSelect }: { event: Event; onSelect: (e: Event) => 
         {isClosed && (
           <span
             className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full flex-shrink-0"
-            style={{ color: "#7c6bb5", background: "#f0ebff", border: "1px solid #d8ccfa" }}
+            style={{ color: "#a594fb", background: "rgba(131, 110, 249, 0.1)", border: "1px solid #d8ccfa" }}
           >
             <span className="w-1.5 h-1.5 rounded-full bg-[#b0a0d8]" />
             Cerrado
@@ -58,11 +58,11 @@ function EventCard({ event, onSelect }: { event: Event; onSelect: (e: Event) => 
 
       {/* Meta */}
       <div className="flex flex-col gap-1.5">
-        <div className="flex items-center gap-2 text-xs" style={{ color: "#7c6bb5" }}>
+        <div className="flex items-center gap-2 text-xs" style={{ color: "#a594fb" }}>
           <Calendar className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#a594fb" }} />
           {event.date}
         </div>
-        <div className="flex items-center gap-2 text-xs" style={{ color: "#7c6bb5" }}>
+        <div className="flex items-center gap-2 text-xs" style={{ color: "#a594fb" }}>
           <MapPin className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#a594fb" }} />
           {event.venue}
         </div>
@@ -101,26 +101,26 @@ export function ScreenEvents() {
   )
 
   return (
-    <main className="min-h-screen pt-20 pb-10 px-5 max-w-md mx-auto" style={{ background: "#f8f5ff" }}>
+    <main className="min-h-screen pt-20 pb-10 px-5 max-w-md mx-auto" style={{ background: "#0a0514" }}>
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={() => goTo("home")}
           className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors hover:bg-[#e8e0ff]"
-          style={{ background: "#ffffff", border: "1px solid #d8ccfa" }}
+          style={{ background: "var(--surface-1)", border: "1px solid #d8ccfa" }}
         >
-          <ChevronLeft className="w-4 h-4" style={{ color: "#1a0f3c" }} />
+          <ChevronLeft className="w-4 h-4" style={{ color: "#ffffff" }} />
         </button>
         <div>
-          <h1 className="font-bold text-xl" style={{ color: "#1a0f3c" }}>Eventos</h1>
-          <p className="text-xs" style={{ color: "#7c6bb5" }}>Selecciona donde vas esta noche</p>
+          <h1 className="font-bold text-xl" style={{ color: "#ffffff" }}>Eventos</h1>
+          <p className="text-xs" style={{ color: "#a594fb" }}>Selecciona donde vas esta noche</p>
         </div>
       </div>
 
       {/* QR scan button */}
       <button
         className="w-full rounded-2xl p-4 flex items-center gap-3 mb-5 transition-all hover:shadow-md active:scale-[0.99] card-shadow"
-        style={{ background: "#ffffff", border: "1px dashed #b0a0d8" }}
+        style={{ background: "var(--surface-1)", border: "1px dashed #b0a0d8" }}
       >
         <div
           className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -129,16 +129,16 @@ export function ScreenEvents() {
           <QrCode className="w-5 h-5" style={{ color: "#836ef9" }} />
         </div>
         <div className="text-left">
-          <p className="font-semibold text-sm" style={{ color: "#1a0f3c" }}>Escanear QR del evento</p>
-          <p className="text-xs" style={{ color: "#7c6bb5" }}>Apunta a la entrada del antro</p>
+          <p className="font-semibold text-sm" style={{ color: "#ffffff" }}>Escanear QR del evento</p>
+          <p className="text-xs" style={{ color: "#a594fb" }}>Apunta a la entrada del antro</p>
         </div>
       </button>
 
       {/* Divider */}
       <div className="flex items-center gap-3 mb-5">
-        <div className="flex-1 h-px" style={{ background: "#e8e0ff" }} />
+        <div className="flex-1 h-px" style={{ background: "rgba(131, 110, 249, 0.2)" }} />
         <span className="text-xs" style={{ color: "#b0a0d8" }}>o elige manualmente</span>
-        <div className="flex-1 h-px" style={{ background: "#e8e0ff" }} />
+        <div className="flex-1 h-px" style={{ background: "rgba(131, 110, 249, 0.2)" }} />
       </div>
 
       {/* Events list */}
@@ -152,9 +152,9 @@ export function ScreenEvents() {
       {checkIn && (
         <div
           className="mt-6 rounded-2xl p-4 card-shadow"
-          style={{ background: "#ffffff", border: "1px solid rgba(131,110,249,0.3)" }}
+          style={{ background: "var(--surface-1)", border: "1px solid rgba(131,110,249,0.3)" }}
         >
-          <p className="text-xs mb-1" style={{ color: "#7c6bb5" }}>Tienes check-in activo en</p>
+          <p className="text-xs mb-1" style={{ color: "#a594fb" }}>Tienes check-in activo en</p>
           <p className="font-bold text-sm mb-3" style={{ color: "#836ef9" }}>{checkIn.eventName}</p>
           <button
             onClick={() => goTo("metrics")}

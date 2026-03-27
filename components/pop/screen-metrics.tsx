@@ -20,8 +20,8 @@ function SleepSlider({ value, onChange }: { value: number; onChange: (v: number)
             <BedDouble className="w-4 h-4" style={{ color: "#836ef9" }} />
           </div>
           <div>
-            <p className="font-semibold text-sm" style={{ color: "#1a0f3c" }}>Horas de sueno</p>
-            <p className="text-xs" style={{ color: "#7c6bb5" }}>Cuanto dormiste?</p>
+            <p className="font-semibold text-sm" style={{ color: "#ffffff" }}>Horas de sueno</p>
+            <p className="text-xs" style={{ color: "#a594fb" }}>Cuanto dormiste?</p>
           </div>
         </div>
         <span className="text-2xl font-bold tabular-nums" style={{ color }}>
@@ -86,12 +86,12 @@ function NumberInput({
         <Icon className="w-4 h-4" style={{ color: "#836ef9" }} />
       </div>
       <div className="flex-1">
-        <p className="font-semibold text-sm" style={{ color: "#1a0f3c" }}>{label}</p>
-        <p className="text-xs" style={{ color: "#7c6bb5" }}>{sublabel}</p>
+        <p className="font-semibold text-sm" style={{ color: "#ffffff" }}>{label}</p>
+        <p className="text-xs" style={{ color: "#a594fb" }}>{sublabel}</p>
       </div>
       <div
         className="flex items-center gap-1.5 rounded-xl px-3 py-2 w-28"
-        style={{ background: "#f0ebff", border: "1px solid #d8ccfa" }}
+        style={{ background: "rgba(131, 110, 249, 0.1)", border: "1px solid #d8ccfa" }}
       >
         <input
           type="number"
@@ -102,9 +102,9 @@ function NumberInput({
           onChange={e => onChange(e.target.value)}
           placeholder={placeholder}
           className="w-full bg-transparent text-sm font-bold text-right outline-none tabular-nums placeholder:opacity-40"
-          style={{ color: "#1a0f3c" }}
+          style={{ color: "#ffffff" }}
         />
-        <span className="text-xs flex-shrink-0" style={{ color: "#7c6bb5" }}>{unit}</span>
+        <span className="text-xs flex-shrink-0" style={{ color: "#a594fb" }}>{unit}</span>
       </div>
     </div>
   )
@@ -130,21 +130,21 @@ export function ScreenMetrics() {
   }
 
   return (
-    <main className="min-h-screen pt-20 pb-10 px-5 max-w-md mx-auto" style={{ background: "#f8f5ff" }}>
+    <main className="min-h-screen pt-20 pb-10 px-5 max-w-md mx-auto" style={{ background: "#0a0514" }}>
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={() => goTo("events")}
           className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors hover:bg-[#e8e0ff]"
-          style={{ background: "#ffffff", border: "1px solid #d8ccfa" }}
+          style={{ background: "var(--surface-1)", border: "1px solid #d8ccfa" }}
         >
-          <ChevronLeft className="w-4 h-4" style={{ color: "#1a0f3c" }} />
+          <ChevronLeft className="w-4 h-4" style={{ color: "#ffffff" }} />
         </button>
         <div>
           <h1 className="font-bold text-xl text-gradient-purple">
             Como amaneciste?
           </h1>
-          <p className="text-xs" style={{ color: "#7c6bb5" }}>
+          <p className="text-xs" style={{ color: "#a594fb" }}>
             {checkIn ? `Despues de ${checkIn.eventName}` : "Ingresa tus metricas del dia siguiente"}
           </p>
         </div>
@@ -153,10 +153,10 @@ export function ScreenMetrics() {
       {/* Form card */}
       <div
         className="rounded-2xl p-5 mb-4 flex flex-col gap-6 card-shadow"
-        style={{ background: "#ffffff", border: "1px solid #e8e0ff" }}
+        style={{ background: "var(--surface-1)", border: "1px solid #e8e0ff" }}
       >
         <SleepSlider value={sleep} onChange={setSleep} />
-        <div className="h-px" style={{ background: "#e8e0ff" }} />
+        <div className="h-px" style={{ background: "rgba(131, 110, 249, 0.2)" }} />
         <NumberInput
           icon={Footprints}
           label="Pasos caminados"
@@ -168,7 +168,7 @@ export function ScreenMetrics() {
           min={0}
           max={30000}
         />
-        <div className="h-px" style={{ background: "#e8e0ff" }} />
+        <div className="h-px" style={{ background: "rgba(131, 110, 249, 0.2)" }} />
         <NumberInput
           icon={Heart}
           label="Pulso en reposo"
@@ -185,17 +185,17 @@ export function ScreenMetrics() {
       {/* JSON upload */}
       <button
         className="w-full rounded-2xl p-3.5 flex items-center gap-3 mb-6 transition-colors hover:border-[#836ef9]"
-        style={{ background: "#ffffff", border: "1px dashed #c4b5fd" }}
+        style={{ background: "var(--surface-1)", border: "1px dashed #c4b5fd" }}
       >
         <div
           className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-          style={{ background: "#f0ebff" }}
+          style={{ background: "rgba(131, 110, 249, 0.1)" }}
         >
-          <Upload className="w-4 h-4" style={{ color: "#7c6bb5" }} />
+          <Upload className="w-4 h-4" style={{ color: "#a594fb" }} />
         </div>
         <div className="text-left">
-          <p className="text-sm font-medium" style={{ color: "#1a0f3c" }}>Subir JSON de wearable</p>
-          <p className="text-xs" style={{ color: "#7c6bb5" }}>Apple Health, Fitbit o similar</p>
+          <p className="text-sm font-medium" style={{ color: "#ffffff" }}>Subir JSON de wearable</p>
+          <p className="text-xs" style={{ color: "#a594fb" }}>Apple Health, Fitbit o similar</p>
         </div>
       </button>
 
@@ -211,14 +211,14 @@ export function ScreenMetrics() {
         )}
         style={
           !isValid
-            ? { background: "#e8e0ff", color: "#b0a0d8", border: "1px solid #d8ccfa" }
+            ? { background: "rgba(131, 110, 249, 0.2)", color: "#b0a0d8", border: "1px solid #d8ccfa" }
             : {}
         }
       >
         Calcular mi Cruda
       </button>
 
-      <p className="mt-3 text-xs text-center" style={{ color: "#c4b5fd" }}>
+      <p className="mt-3 text-xs text-center" style={{ color: "#836ef9" }}>
         Tus datos no se almacenan. Solo se usan para calcular el score.
       </p>
     </main>
@@ -234,7 +234,7 @@ export function ScreenCalculating() {
   ]
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-5 max-w-md mx-auto" style={{ background: "#f8f5ff" }}>
+    <main className="min-h-screen flex flex-col items-center justify-center px-5 max-w-md mx-auto" style={{ background: "#0a0514" }}>
       {/* Animated glow orb */}
       <div className="relative mb-8">
         <div
@@ -253,10 +253,10 @@ export function ScreenCalculating() {
         />
       </div>
 
-      <h2 className="font-bold text-xl text-center mb-2" style={{ color: "#1a0f3c" }}>
+      <h2 className="font-bold text-xl text-center mb-2" style={{ color: "#ffffff" }}>
         Calculando tu cruda...
       </h2>
-      <p className="text-sm text-center mb-8" style={{ color: "#7c6bb5" }}>
+      <p className="text-sm text-center mb-8" style={{ color: "#a594fb" }}>
         El oraculo esta evaluando tus metricas
       </p>
 
@@ -265,11 +265,11 @@ export function ScreenCalculating() {
           <div
             key={phrase}
             className="flex items-center gap-2.5 py-2 text-sm"
-            style={{ color: i === 0 ? "#836ef9" : "#c4b5fd" }}
+            style={{ color: i === 0 ? "#836ef9" : "#836ef9" }}
           >
             <div
               className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-              style={{ background: i === 0 ? "#836ef9" : "#e8e0ff" }}
+              style={{ background: i === 0 ? "#836ef9" : "rgba(131, 110, 249, 0.2)" }}
             />
             {phrase}
           </div>

@@ -22,16 +22,16 @@ export function TxHashBadge({ txHash, explorerUrl = "#", className }: TxHashBadg
   return (
     <div
       className={cn("relative flex items-center gap-2 rounded-xl px-3 py-2", className)}
-      style={{ background: "#f0ebff", border: "1px solid #d8ccfa" }}
+      style={{ background: "rgba(131, 110, 249, 0.1)", border: "1px solid #d8ccfa" }}
     >
       <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse flex-shrink-0" />
-      <span className="font-mono text-xs truncate flex-1" style={{ color: "#4b3f72" }}>{txHash}</span>
+      <span className="font-mono text-xs truncate flex-1" style={{ color: "rgba(131, 110, 249, 0.3)" }}>{txHash}</span>
       <div className="flex items-center gap-1 flex-shrink-0">
         <button
           onClick={handleCopy}
           className="p-1 rounded transition-colors hover:bg-[#e8e0ff]"
           title="Copiar tx hash"
-          style={{ color: "#7c6bb5" }}
+          style={{ color: "#a594fb" }}
         >
           <Copy className="w-3.5 h-3.5" />
         </button>
@@ -41,7 +41,7 @@ export function TxHashBadge({ txHash, explorerUrl = "#", className }: TxHashBadg
           rel="noopener noreferrer"
           className="p-1 rounded transition-colors hover:bg-[#e8e0ff]"
           title="Ver en explorador"
-          style={{ color: "#7c6bb5" }}
+          style={{ color: "#a594fb" }}
         >
           <ExternalLink className="w-3.5 h-3.5" />
         </a>
@@ -49,7 +49,7 @@ export function TxHashBadge({ txHash, explorerUrl = "#", className }: TxHashBadg
       {copied && (
         <span
           className="absolute right-0 -top-8 text-xs px-2 py-1 rounded-lg shadow"
-          style={{ background: "#ffffff", border: "1px solid rgba(22, 163, 74, 0.25)", color: "#16a34a" }}
+          style={{ background: "var(--surface-1)", border: "1px solid rgba(22, 163, 74, 0.25)", color: "#16a34a" }}
         >
           Copiado
         </span>

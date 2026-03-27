@@ -88,7 +88,7 @@ export function WalletButton({ compact, className }: WalletButtonProps) {
           }
           disabled={isSwitching}
           className="text-xs font-semibold px-2 py-1 rounded-lg"
-          style={{ background: "#fef3c7", color: "#b45309", border: "1px solid #fcd34d" }}
+          style={{ background: "#451a03", color: "#fcd34d", border: "1px solid #b45309" }}
         >
           {isSwitching ? "…" : "Monad Testnet"}
         </button>
@@ -102,9 +102,9 @@ export function WalletButton({ compact, className }: WalletButtonProps) {
             className
           )}
           style={{
-            background: "#ffffff",
-            border: "1px solid #d8ccfa",
-            color: "#1a0f3c",
+            background: "var(--surface-1)",
+            border: "1px solid rgba(131, 110, 249, 0.3)",
+            color: "#ffffff",
             boxShadow: "0 1px 4px rgba(131,110,249,0.1)",
           }}
         >
@@ -114,12 +114,12 @@ export function WalletButton({ compact, className }: WalletButtonProps) {
           >
             <div className="w-2 h-2 rounded-full bg-white" />
           </div>
-          <span className="font-mono text-xs" style={{ color: "#1a0f3c" }}>
+          <span className="font-mono text-xs" style={{ color: "#ffffff" }}>
             {formatShortAddress(wallet)}
           </span>
           <ChevronDown
             className={cn("w-3.5 h-3.5 transition-transform", open && "rotate-180")}
-            style={{ color: "#7c6bb5" }}
+            style={{ color: "#a594fb" }}
           />
         </button>
 
@@ -128,7 +128,7 @@ export function WalletButton({ compact, className }: WalletButtonProps) {
             <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
             <div
               className="absolute right-0 top-full mt-2 w-48 rounded-xl shadow-xl z-20 p-1"
-              style={{ background: "#ffffff", border: "1px solid #d8ccfa" }}
+              style={{ background: "var(--surface-1)", border: "1px solid rgba(131, 110, 249, 0.3)" }}
             >
               <button
                 type="button"
@@ -138,8 +138,8 @@ export function WalletButton({ compact, className }: WalletButtonProps) {
                   toast.success("Dirección copiada")
                 }}
                 className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm rounded-lg transition-colors"
-                style={{ color: "#4b3f72" }}
-                onMouseEnter={e => (e.currentTarget.style.background = "#f0ebff")}
+                style={{ color: "rgba(131, 110, 249, 0.8)" }}
+                onMouseEnter={e => (e.currentTarget.style.background = "rgba(131, 110, 249, 0.1)")}
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
                 <Copy className="w-4 h-4" />
@@ -150,7 +150,7 @@ export function WalletButton({ compact, className }: WalletButtonProps) {
                 onClick={() => void handleDisconnect()}
                 disabled={busy}
                 className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm rounded-lg transition-colors text-red-500"
-                onMouseEnter={e => (e.currentTarget.style.background = "#fef2f2")}
+                onMouseEnter={e => (e.currentTarget.style.background = "rgba(220,38,38,0.1)")}
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
                 <LogOut className="w-4 h-4" />
