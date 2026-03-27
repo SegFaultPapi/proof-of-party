@@ -24,7 +24,7 @@ export function ScreenResult() {
   }
 
   return (
-    <main className="min-h-screen pt-20 pb-10 px-5 max-w-md mx-auto flex flex-col" style={{ background: "#f8f5ff" }}>
+    <main className="min-h-screen pt-20 pb-10 px-5 max-w-md mx-auto flex flex-col" style={{ background: "#0a0514" }}>
       {/* Verdict hero */}
       <div className="flex flex-col items-center text-center py-6">
         <div
@@ -54,7 +54,7 @@ export function ScreenResult() {
         >
           {isCruda ? "Cruda Confirmada" : "Superviviente"}
         </h1>
-        <p className="text-sm max-w-xs text-balance leading-relaxed" style={{ color: "#7c6bb5" }}>
+        <p className="text-sm max-w-xs text-balance leading-relaxed" style={{ color: "#a594fb" }}>
           {isCruda
             ? "El oraculo confirmo que tu cuerpo necesita recuperacion on-chain."
             : "Resististe la noche como todo un DeFi degen. Aqui tu bonus fitness."}
@@ -64,14 +64,14 @@ export function ScreenResult() {
       {/* Score breakdown */}
       <div
         className="rounded-2xl p-4 mb-4 card-shadow"
-        style={{ background: "#ffffff", border: "1px solid #e8e0ff" }}
+        style={{ background: "var(--surface-1)", border: "1px solid #e8e0ff" }}
       >
         <div className="flex items-center gap-2 mb-4">
           <BarChart2 className="w-4 h-4" style={{ color: "#836ef9" }} />
-          <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#7c6bb5" }}>
+          <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#a594fb" }}>
             Score: {result.score}/100
           </span>
-          <div className="flex-1 h-1.5 rounded-full overflow-hidden ml-2" style={{ background: "#e8e0ff" }}>
+          <div className="flex-1 h-1.5 rounded-full overflow-hidden ml-2" style={{ background: "rgba(131, 110, 249, 0.2)" }}>
             <div
               className="h-full rounded-full transition-all"
               style={{
@@ -106,7 +106,7 @@ export function ScreenResult() {
             <div key={label} className="flex items-center justify-between">
               <div className="flex items-center gap-2.5 text-sm">
                 <Icon className="w-4 h-4" style={{ color: "#a594fb" }} />
-                <span style={{ color: "#7c6bb5" }}>{label}</span>
+                <span style={{ color: "#a594fb" }}>{label}</span>
               </div>
               <span className="font-bold text-sm tabular-nums" style={{ color }}>
                 {value}
@@ -119,21 +119,21 @@ export function ScreenResult() {
       {/* Payout card */}
       <div
         className="rounded-2xl p-5 mb-4 card-shadow"
-        style={{ background: "#ffffff", border: "1px solid rgba(131,110,249,0.22)" }}
+        style={{ background: "var(--surface-1)", border: "1px solid rgba(131,110,249,0.22)" }}
       >
-        <p className="text-xs font-medium mb-3 uppercase tracking-wider" style={{ color: "#7c6bb5" }}>
+        <p className="text-xs font-medium mb-3 uppercase tracking-wider" style={{ color: "#a594fb" }}>
           Tu recompensa
         </p>
         <div className="flex items-end justify-between mb-4">
           <div>
-            <p className="text-xs mb-1" style={{ color: "#7c6bb5" }}>Recibiras</p>
-            <p className="text-3xl font-bold tabular-nums" style={{ color: "#1a0f3c" }}>
+            <p className="text-xs mb-1" style={{ color: "#a594fb" }}>Recibiras</p>
+            <p className="text-3xl font-bold tabular-nums" style={{ color: "#ffffff" }}>
               {result.net.toFixed(3)}{" "}
-              <span className="text-lg font-medium" style={{ color: "#7c6bb5" }}>USDC</span>
+              <span className="text-lg font-medium" style={{ color: "#a594fb" }}>USDC</span>
             </p>
           </div>
           <div className="text-right">
-            <p className="text-xs" style={{ color: "#7c6bb5" }}>Fee PoP (5%)</p>
+            <p className="text-xs" style={{ color: "#a594fb" }}>Fee PoP (5%)</p>
             <p className="text-sm tabular-nums" style={{ color: "#b0a0d8" }}>{result.fee.toFixed(3)} USDC</p>
           </div>
         </div>
@@ -166,7 +166,7 @@ export function ScreenResult() {
       {result.txHash && (
         <div
           className="rounded-2xl p-4 mb-4 card-shadow"
-          style={{ background: "#ffffff", border: "1px solid rgba(22,163,74,0.25)" }}
+          style={{ background: "var(--surface-1)", border: "1px solid rgba(22,163,74,0.25)" }}
         >
           <div className="flex items-center gap-2 mb-3">
             <div className="w-2 h-2 rounded-full bg-green-500" />
@@ -189,7 +189,7 @@ export function ScreenResult() {
         <button
           onClick={() => goTo("dashboard")}
           className="w-full font-semibold rounded-2xl py-3.5 text-sm transition-colors hover:bg-[#e8e0ff]"
-          style={{ background: "#ffffff", border: "1px solid #d8ccfa", color: "#4b3f72" }}
+          style={{ background: "var(--surface-1)", border: "1px solid #d8ccfa", color: "rgba(131, 110, 249, 0.3)" }}
         >
           Ver dashboard
         </button>

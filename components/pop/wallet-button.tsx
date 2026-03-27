@@ -39,9 +39,9 @@ export function WalletButton({ compact, className }: WalletButtonProps) {
           className
         )}
         style={{
-          background: "#ffffff",
+          background: "var(--surface-1)",
           border: "1px solid #d8ccfa",
-          color: "#1a0f3c",
+          color: "#ffffff",
           boxShadow: "0 1px 4px rgba(131,110,249,0.1)",
         }}
       >
@@ -51,10 +51,10 @@ export function WalletButton({ compact, className }: WalletButtonProps) {
         >
           <div className="w-2 h-2 rounded-full bg-white" />
         </div>
-        <span className="font-mono text-xs" style={{ color: "#1a0f3c" }}>{wallet}</span>
+        <span className="font-mono text-xs" style={{ color: "#ffffff" }}>{wallet}</span>
         <ChevronDown
           className={cn("w-3.5 h-3.5 transition-transform", open && "rotate-180")}
-          style={{ color: "#7c6bb5" }}
+          style={{ color: "#a594fb" }}
         />
       </button>
 
@@ -63,13 +63,13 @@ export function WalletButton({ compact, className }: WalletButtonProps) {
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
           <div
             className="absolute right-0 top-full mt-2 w-48 rounded-xl shadow-xl z-20 p-1"
-            style={{ background: "#ffffff", border: "1px solid #d8ccfa" }}
+            style={{ background: "var(--surface-1)", border: "1px solid #d8ccfa" }}
           >
             <button
               onClick={() => { navigator.clipboard.writeText(wallet); setOpen(false) }}
               className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm rounded-lg transition-colors"
-              style={{ color: "#4b3f72" }}
-              onMouseEnter={e => (e.currentTarget.style.background = "#f0ebff")}
+              style={{ color: "rgba(131, 110, 249, 0.3)" }}
+              onMouseEnter={e => (e.currentTarget.style.background = "rgba(131, 110, 249, 0.1)")}
               onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
             >
               <Copy className="w-4 h-4" />
