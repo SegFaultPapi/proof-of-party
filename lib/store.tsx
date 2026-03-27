@@ -1,10 +1,12 @@
 "use client"
 
-import React, { createContext, useContext, useState, useCallback } from "react"
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react"
+import type { EtherfuseKycStatus } from "@/lib/etherfuse-client"
 
 export type Screen =
   | "home"
   | "events"
+  | "kyc"
   | "checkin-confirm"
   | "checkin-success"
   | "metrics"
@@ -59,7 +61,10 @@ export interface DashboardEntry {
 
 interface AppState {
   screen: Screen
+  /** Dirección EVM (0x…) sincronizada con wagmi en Monad Testnet */
   wallet: string | null
+  etherfuseCustomerId: string | null
+  kycStatus: EtherfuseKycStatus | null
   checkIn: CheckIn | null
   metrics: Metrics | null
   result: HangoverResult | null
@@ -69,8 +74,11 @@ interface AppState {
 
 interface AppContextType extends AppState {
   setScreen: (s: Screen) => void
-  connectWallet: () => void
+  /** Actualiza la dirección desde wagmi (o null al desconectar). */
+  syncWalletFromChain: (address: string | null) => void
   disconnectWallet: () => void
+  setEtherfuseCustomerId: (id: string | null) => void
+  setKycStatus: (s: EtherfuseKycStatus | null) => void
   selectEvent: (e: Event) => void
   confirmCheckIn: () => void
   submitMetrics: (m: Metrics) => void
@@ -108,16 +116,33 @@ function calcHangoverScore(m: Metrics): { score: number; verdict: Verdict; payou
 
 const AppContext = createContext<AppContextType | null>(null)
 
+const STORAGE_EF_CUSTOMER = "pop_ef_customer_id"
+const STORAGE_EF_WALLET = "pop_ef_wallet"
+
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AppState>({
     screen: "home",
     wallet: null,
+    etherfuseCustomerId: null,
+    kycStatus: null,
     checkIn: null,
     metrics: null,
     result: null,
     dashboard: MOCK_DASHBOARD,
     selectedEvent: null,
   })
+
+  useEffect(() => {
+    try {
+      const cid = sessionStorage.getItem(STORAGE_EF_CUSTOMER)
+      const w = sessionStorage.getItem(STORAGE_EF_WALLET)
+      if (cid && w) {
+        setState(s => ({ ...s, etherfuseCustomerId: cid }))
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [])
 
   const setScreen = useCallback((screen: Screen) => {
     setState(s => ({ ...s, screen }))
@@ -128,13 +153,56 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }, [])
 
-  const connectWallet = useCallback(() => {
-    const mockAddr = "0x1A2b...9f4E"
-    setState(s => ({ ...s, wallet: mockAddr, screen: "events" }))
+  const syncWalletFromChain = useCallback((address: string | null) => {
+    setState(s => {
+      if (address === null) {
+        return { ...s, wallet: null }
+      }
+      try {
+        const sw = sessionStorage.getItem(STORAGE_EF_WALLET)
+        const c = sessionStorage.getItem(STORAGE_EF_CUSTOMER)
+        if (c && sw && sw.toLowerCase() === address.toLowerCase()) {
+          return { ...s, wallet: address, etherfuseCustomerId: c }
+        }
+      } catch {
+        /* ignore */
+      }
+      const prev = s.wallet?.toLowerCase()
+      const next = address.toLowerCase()
+      return {
+        ...s,
+        wallet: address,
+        etherfuseCustomerId: prev === next ? s.etherfuseCustomerId : null,
+      }
+    })
+  }, [])
+
+  const setEtherfuseCustomerId = useCallback((id: string | null) => {
+    setState(s => ({ ...s, etherfuseCustomerId: id }))
+  }, [])
+
+  const setKycStatus = useCallback((kycStatus: EtherfuseKycStatus | null) => {
+    setState(s => ({ ...s, kycStatus }))
   }, [])
 
   const disconnectWallet = useCallback(() => {
-    setState(s => ({ ...s, wallet: null, screen: "home", checkIn: null, metrics: null, result: null, selectedEvent: null }))
+    try {
+      sessionStorage.removeItem(STORAGE_EF_CUSTOMER)
+      sessionStorage.removeItem(STORAGE_EF_WALLET)
+    } catch {
+      /* ignore */
+    }
+    setState(s => ({
+      ...s,
+      wallet: null,
+      etherfuseCustomerId: null,
+      kycStatus: null,
+      screen: "home",
+      checkIn: null,
+      metrics: null,
+      result: null,
+      selectedEvent: null,
+    }))
   }, [])
 
   const selectEvent = useCallback((event: Event) => {
@@ -200,7 +268,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   return (
-    <AppContext.Provider value={{ ...state, setScreen, connectWallet, disconnectWallet, selectEvent, confirmCheckIn, submitMetrics, claimPayout, goTo }}>
+    <AppContext.Provider
+      value={{
+        ...state,
+        setScreen,
+        syncWalletFromChain,
+        disconnectWallet,
+        setEtherfuseCustomerId,
+        setKycStatus,
+        selectEvent,
+        confirmCheckIn,
+        submitMetrics,
+        claimPayout,
+        goTo,
+      }}
+    >
       {children}
     </AppContext.Provider>
   )

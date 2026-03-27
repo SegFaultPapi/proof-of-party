@@ -3,9 +3,17 @@
 # dependencies
 /node_modules
 
+# Monad MCP tutorial (clon local; ver ~/.cursor/mcp.json → monad-mcp)
+monad-mcp-tutorial/
+
 # next.js
 /.next/
 /out/
+
+# Foundry (contracts/)
+contracts/cache/
+contracts/out/
+contracts/broadcast/
 
 # production
 /build

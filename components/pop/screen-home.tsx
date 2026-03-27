@@ -1,17 +1,20 @@
 "use client"
 
-import { Mic, Volume2, VolumeX, ChevronDown } from "lucide-react"
+import { Mic, Volume2, VolumeX, ChevronDown, ChevronRight, Banknote, Globe } from "lucide-react"
+import Link from "next/link"
 import { useApp } from "@/lib/store"
-import { useRef, useState, useEffect } from "react"
+import { useRef, useState } from "react"
+import { useAccount } from "wagmi"
 
 export function ScreenHome() {
   const { wallet, connectWallet, goTo } = useApp()
+  const { isConnected } = useAccount()
   const [isListening, setIsListening] = useState(true)
   const [isMuted, setIsMuted] = useState(true)
   const videoRef = useRef<HTMLVideoElement>(null)
 
   const handleClick = () => {
-    if (!wallet) {
+    if (!isConnected || !wallet) {
       connectWallet()
     } else {
       goTo("events")
@@ -25,7 +28,6 @@ export function ScreenHome() {
     }
   }
 
-  // Opcional: Auto SCROLL handler si lo deseas pudieses agregarlo
   const scrollToBottom = () => {
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
   }
@@ -101,7 +103,7 @@ export function ScreenHome() {
       </section>
 
       {/* ====== SECTION 2: INICIAR BUTTON ====== */}
-      <section className="min-h-screen w-full flex flex-col items-center justify-center relative z-10 bg-gradient-to-t from-[#0a0514] via-[#0a0514]/40 to-transparent">
+      <section className="min-h-screen w-full flex flex-col items-center justify-center relative z-10 bg-gradient-to-t from-[#0a0514] via-[#0a0514]/40 to-transparent gap-8">
         <button 
           onClick={handleClick}
           className="relative overflow-hidden group px-14 py-6 rounded-full bg-white text-[#0a0514] font-black text-2xl tracking-[0.2em] uppercase transition-all hover:scale-105 active:scale-95 shadow-[0_0_50px_rgba(255,255,255,0.2)] hover:shadow-[0_0_80px_rgba(255,255,255,0.5)]"
@@ -109,6 +111,49 @@ export function ScreenHome() {
           <span className="relative z-10">Iniciar</span>
           <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity blur-sm"></div>
         </button>
+
+        {/* Links from remote main */}
+        <div className="flex flex-col gap-4 w-full max-w-sm px-6">
+          <Link
+            href="/onramp"
+            className="w-full rounded-2xl p-4 flex items-center justify-between transition-all hover:shadow-md"
+            style={{ background: "rgba(20, 10, 35, 0.6)", border: "1px solid rgba(131, 110, 249, 0.2)", boxShadow: "0 2px 8px rgba(131,110,249,0.08)" }}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="w-9 h-9 rounded-xl flex items-center justify-center"
+                style={{ background: "rgba(34, 197, 94, 0.1)", border: "1px solid rgba(34, 197, 94, 0.25)" }}
+              >
+                <Banknote className="w-4 h-4" style={{ color: "#16a34a" }} />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-semibold" style={{ color: "#ffffff" }}>Fondos al seguro (onramp)</p>
+                <p className="text-xs" style={{ color: "#a594fb" }}>Probar Etherfuse sandbox · Monad</p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4" style={{ color: "#836ef9" }} />
+          </Link>
+
+          <button
+            onClick={() => goTo("dashboard")}
+            className="w-full rounded-2xl p-4 flex items-center justify-between transition-all hover:shadow-md"
+            style={{ background: "rgba(20, 10, 35, 0.6)", border: "1px solid rgba(131, 110, 249, 0.2)", boxShadow: "0 2px 8px rgba(131,110,249,0.08)" }}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="w-9 h-9 rounded-xl flex items-center justify-center"
+                style={{ background: "rgba(131,110,249,0.1)", border: "1px solid rgba(131,110,249,0.2)" }}
+              >
+                <Globe className="w-4 h-4" style={{ color: "#836ef9" }} />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-semibold" style={{ color: "#ffffff" }}>Dashboard publico</p>
+                <p className="text-xs" style={{ color: "#a594fb" }}>Ver pagos liquidados</p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4" style={{ color: "#836ef9" }} />
+          </button>
+        </div>
       </section>
 
     </main>

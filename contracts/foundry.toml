@@ -1,0 +1,15 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+solc_version = "0.8.24"
+
+# Monad Testnet — https://docs.monad.xyz/developer-essentials/testnets (chain ID 10143)
+[rpc_endpoints]
+monad = "https://testnet-rpc.monad.xyz"
+
+# Verificación en explorer (opcional)
+# [etherscan]
+# monad = { key = "${MONAD_ETHERSCAN_API_KEY}", url = "https://testnet.monadvision.com/api", chain = "10143" }
+
+# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
