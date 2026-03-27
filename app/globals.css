@@ -1,0 +1,166 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+/* ─── Proof of Party — Light + Monad Purple Theme ──────────────────
+   Background:  #f8f5ff  (very light lavender white)
+   Surface-1:   #ffffff  (white cards)
+   Surface-2:   #f0ebff  (light purple tint panels)
+   Surface-3:   #e8e0ff  (slightly deeper purple tint hover)
+   Primary:     #836EF9  (Monad purple)
+   Purple-L:    #a594fb  (lighter Monad purple)
+   Purple-D:    #6b56e8  (deeper Monad purple)
+   Border:      #d8ccfa  (soft purple border)
+   Muted-FG:    #7c6bb5  (muted purple text)
+   Foreground:  #1a0f3c  (very dark purple for text)
+──────────────────────────────────────────────────────────────────── */
+
+:root {
+  --background: #f8f5ff;
+  --foreground: #1a0f3c;
+  --card: #ffffff;
+  --card-foreground: #1a0f3c;
+  --popover: #ffffff;
+  --popover-foreground: #1a0f3c;
+  --primary: #836ef9;
+  --primary-foreground: #ffffff;
+  --secondary: #f0ebff;
+  --secondary-foreground: #1a0f3c;
+  --muted: #f0ebff;
+  --muted-foreground: #7c6bb5;
+  --accent: #e8e0ff;
+  --accent-foreground: #1a0f3c;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #d8ccfa;
+  --input: #f0ebff;
+  --ring: #836ef9;
+  --radius: 0.875rem;
+
+  /* Monad-specific tokens */
+  --monad-purple: #836ef9;
+  --monad-purple-light: #a594fb;
+  --monad-purple-deep: #6b56e8;
+  --monad-purple-dim: #7c6bb5;
+  --monad-purple-glow: rgba(131, 110, 249, 0.25);
+  --surface-1: #ffffff;
+  --surface-2: #f0ebff;
+  --surface-3: #e8e0ff;
+}
+
+@theme inline {
+  --font-sans: 'Space Grotesk', 'Geist', sans-serif;
+  --font-mono: 'Geist Mono', monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    color-scheme: light;
+  }
+  body {
+    @apply font-sans antialiased;
+    background-color: #f8f5ff;
+    color: #1a0f3c;
+  }
+}
+
+@layer utilities {
+  /* Glow effects */
+  .glow-purple {
+    box-shadow:
+      0 0 20px rgba(131, 110, 249, 0.35),
+      0 0 40px rgba(131, 110, 249, 0.12);
+  }
+  .glow-purple-sm {
+    box-shadow: 0 0 10px rgba(131, 110, 249, 0.28);
+  }
+  .glow-purple-lg {
+    box-shadow:
+      0 0 40px rgba(131, 110, 249, 0.45),
+      0 0 80px rgba(131, 110, 249, 0.18);
+  }
+
+  /* Soft card shadow */
+  .card-shadow {
+    box-shadow:
+      0 2px 8px rgba(131, 110, 249, 0.08),
+      0 1px 2px rgba(131, 110, 249, 0.06);
+  }
+  .card-shadow-md {
+    box-shadow:
+      0 4px 16px rgba(131, 110, 249, 0.12),
+      0 2px 4px rgba(131, 110, 249, 0.07);
+  }
+
+  /* Purple gradient text */
+  .text-gradient-purple {
+    background: linear-gradient(135deg, #836ef9 0%, #6b56e8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Accent purple gradient background */
+  .bg-gradient-purple {
+    background: linear-gradient(135deg, #836ef9 0%, #6b56e8 100%);
+  }
+
+  /* Range input styling */
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #836ef9;
+    border: 3px solid #ffffff;
+    box-shadow: 0 0 8px rgba(131, 110, 249, 0.5), 0 2px 4px rgba(0,0,0,0.1);
+    cursor: pointer;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #836ef9;
+    border: 3px solid #ffffff;
+    box-shadow: 0 0 8px rgba(131, 110, 249, 0.5);
+    cursor: pointer;
+  }
+}
