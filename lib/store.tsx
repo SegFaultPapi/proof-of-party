@@ -118,6 +118,45 @@ const AppContext = createContext<AppContextType | null>(null)
 
 const STORAGE_EF_CUSTOMER = "pop_ef_customer_id"
 const STORAGE_EF_WALLET = "pop_ef_wallet"
+const LOCAL_EF_CUSTOMER = "pop_ef_customer_id"
+const LOCAL_EF_WALLET = "pop_ef_wallet"
+
+function readEtherfusePairFromBrowser(): { customerId: string; wallet: string } | null {
+  try {
+    let c = sessionStorage.getItem(STORAGE_EF_CUSTOMER)
+    let w = sessionStorage.getItem(STORAGE_EF_WALLET)
+    if (c && w) return { customerId: c, wallet: w }
+    c = localStorage.getItem(LOCAL_EF_CUSTOMER)
+    w = localStorage.getItem(LOCAL_EF_WALLET)
+    if (c && w) return { customerId: c, wallet: w }
+  } catch {
+    /* ignore */
+  }
+  return null
+}
+
+function clearEtherfuseSessionStorage() {
+  try {
+    sessionStorage.removeItem(STORAGE_EF_CUSTOMER)
+    sessionStorage.removeItem(STORAGE_EF_WALLET)
+    localStorage.removeItem(LOCAL_EF_CUSTOMER)
+    localStorage.removeItem(LOCAL_EF_WALLET)
+  } catch {
+    /* ignore */
+  }
+}
+
+/** Persiste par wallet–customer para recuperar KYC tras cerrar pestaña o sesión. */
+export function persistEtherfuseCustomerWallet(customerId: string, wallet: string) {
+  try {
+    sessionStorage.setItem(STORAGE_EF_CUSTOMER, customerId)
+    sessionStorage.setItem(STORAGE_EF_WALLET, wallet)
+    localStorage.setItem(LOCAL_EF_CUSTOMER, customerId)
+    localStorage.setItem(LOCAL_EF_WALLET, wallet)
+  } catch {
+    /* ignore */
+  }
+}
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AppState>({
@@ -133,14 +172,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   })
 
   useEffect(() => {
-    try {
-      const cid = sessionStorage.getItem(STORAGE_EF_CUSTOMER)
-      const w = sessionStorage.getItem(STORAGE_EF_WALLET)
-      if (cid && w) {
-        setState(s => ({ ...s, etherfuseCustomerId: cid }))
-      }
-    } catch {
-      /* ignore */
+    const pair = readEtherfusePairFromBrowser()
+    if (pair) {
+      setState(s => ({ ...s, etherfuseCustomerId: pair.customerId }))
     }
   }, [])
 
@@ -156,23 +190,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const syncWalletFromChain = useCallback((address: string | null) => {
     setState(s => {
       if (address === null) {
-        return { ...s, wallet: null }
+        clearEtherfuseSessionStorage()
+        return {
+          ...s,
+          wallet: null,
+          etherfuseCustomerId: null,
+          kycStatus: null,
+        }
       }
       try {
-        const sw = sessionStorage.getItem(STORAGE_EF_WALLET)
-        const c = sessionStorage.getItem(STORAGE_EF_CUSTOMER)
-        if (c && sw && sw.toLowerCase() === address.toLowerCase()) {
-          return { ...s, wallet: address, etherfuseCustomerId: c }
+        const pair = readEtherfusePairFromBrowser()
+        if (pair && pair.wallet.toLowerCase() === address.toLowerCase()) {
+          return { ...s, wallet: address, etherfuseCustomerId: pair.customerId }
         }
       } catch {
         /* ignore */
       }
-      const prev = s.wallet?.toLowerCase()
+      const prev = s.wallet?.toLowerCase() ?? null
       const next = address.toLowerCase()
+      const sameAccount = prev !== null && prev === next
+      const firstWalletAttach = prev === null
+      const nextCustomerId =
+        sameAccount || firstWalletAttach ? s.etherfuseCustomerId : null
       return {
         ...s,
         wallet: address,
-        etherfuseCustomerId: prev === next ? s.etherfuseCustomerId : null,
+        etherfuseCustomerId: nextCustomerId,
       }
     })
   }, [])
@@ -186,12 +229,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const disconnectWallet = useCallback(() => {
-    try {
-      sessionStorage.removeItem(STORAGE_EF_CUSTOMER)
-      sessionStorage.removeItem(STORAGE_EF_WALLET)
-    } catch {
-      /* ignore */
-    }
+    clearEtherfuseSessionStorage()
     setState(s => ({
       ...s,
       wallet: null,

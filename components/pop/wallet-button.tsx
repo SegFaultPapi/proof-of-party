@@ -3,10 +3,10 @@
 import { Wallet, ChevronDown, LogOut, Copy, Loader2 } from "lucide-react"
 import { useState } from "react"
 import { usePathname } from "next/navigation"
-import { useConnect, useDisconnect, useAccount, useChainId, useSwitchChain } from "wagmi"
-import { injected } from "wagmi/connectors"
+import { useConfig, useConnect, useDisconnect, useAccount, useChainId, useSwitchChain } from "wagmi"
 import { toast } from "sonner"
 import { useApp } from "@/lib/store"
+import { getDefaultEvmConnector } from "@/lib/wallet-connect"
 import { cn, formatShortAddress } from "@/lib/utils"
 import { monadTestnet } from "@/lib/monad-testnet"
 
@@ -20,19 +20,26 @@ export function WalletButton({ compact, className }: WalletButtonProps) {
   const { goTo, disconnectWallet } = useApp()
   const [open, setOpen] = useState(false)
 
-  const { address, isConnected } = useAccount()
+  const config = useConfig()
+  const { address, isConnected, status, connector } = useAccount()
   const chainId = useChainId()
   const { connectAsync, isPending: isConnecting } = useConnect()
   const { disconnectAsync, isPending: isDisconnecting } = useDisconnect()
   const { switchChainAsync, isPending: isSwitching } = useSwitchChain()
 
   const wallet = address ?? null
-  const busy = isConnecting || isSwitching || isDisconnecting
+  const wagmiTransient = status === "connecting" || status === "reconnecting"
+  const busy = isConnecting || isSwitching || isDisconnecting || wagmiTransient
 
   async function handleConnect() {
+    const evmConnector = getDefaultEvmConnector(config)
+    if (!evmConnector) {
+      toast.error("No hay wallet configurada")
+      return
+    }
     try {
       await connectAsync({
-        connector: injected(),
+        connector: evmConnector,
         chainId: monadTestnet.id,
       })
       try {
@@ -49,9 +56,13 @@ export function WalletButton({ compact, className }: WalletButtonProps) {
 
   async function handleDisconnect() {
     try {
-      await disconnectAsync()
-    } finally {
+      await disconnectAsync({ connector })
       disconnectWallet()
+      toast.success("Sesión cerrada")
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "No se pudo desconectar"
+      toast.error(msg)
+    } finally {
       setOpen(false)
     }
   }

@@ -4,7 +4,8 @@ import Link from "next/link"
 import { useCallback, useEffect, useState } from "react"
 import { Shield, ChevronLeft, Loader2, RefreshCw, CheckCircle2, X, Copy } from "lucide-react"
 import { toast } from "sonner"
-import { useApp } from "@/lib/store"
+import { useApp, persistEtherfuseCustomerWallet } from "@/lib/store"
+import { organizationIdFromEvmAddress } from "@/lib/etherfuse-org-id"
 import {
   apiCreateOrganization,
   apiGetKycStatus,
@@ -16,8 +17,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-const STORAGE_CUSTOMER = "pop_ef_customer_id"
-const STORAGE_WALLET = "pop_ef_wallet"
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 function statusLabel(s: EtherfuseKycStatus | undefined): string {
   switch (s) {
@@ -58,6 +59,7 @@ export function ScreenKyc() {
   const [country, setCountry] = useState("MX")
   const [curp, setCurp] = useState("")
   const [rfc, setRfc] = useState("")
+  const [manualCustomerId, setManualCustomerId] = useState("")
 
   const refreshStatus = useCallback(async () => {
     if (!wallet || !etherfuseCustomerId) return
@@ -68,16 +70,6 @@ export function ScreenKyc() {
       setError(e instanceof Error ? e.message : "No se pudo leer el estado KYC")
     }
   }, [wallet, etherfuseCustomerId, setKycStatus])
-
-  useEffect(() => {
-    try {
-      const w = sessionStorage.getItem(STORAGE_WALLET)
-      const c = sessionStorage.getItem(STORAGE_CUSTOMER)
-      if (w && c && !etherfuseCustomerId) setEtherfuseCustomerId(c)
-    } catch {
-      /* ignore */
-    }
-  }, [etherfuseCustomerId, setEtherfuseCustomerId])
 
   useEffect(() => {
     if (wallet && etherfuseCustomerId) void refreshStatus()
@@ -99,25 +91,53 @@ export function ScreenKyc() {
     setError(null)
     setLoadingOrg(true)
     try {
-      const { organizationId } = await apiCreateOrganization({ publicKey: wallet })
+      const deterministicId = organizationIdFromEvmAddress(wallet)
+      const { organizationId } = await apiCreateOrganization({
+        publicKey: wallet,
+        customerId: deterministicId,
+      })
       setEtherfuseCustomerId(organizationId)
+      persistEtherfuseCustomerWallet(organizationId, wallet)
       try {
-        sessionStorage.setItem(STORAGE_CUSTOMER, organizationId)
-        sessionStorage.setItem(STORAGE_WALLET, wallet)
+        const st = await apiGetKycStatus(organizationId, wallet)
+        if (st.status) setKycStatus(st.status)
       } catch {
-        /* ignore */
+        /* el usuario puede pulsar Actualizar */
       }
-      await refreshStatus()
       setShowOrgSuccess(true)
       setShowKycSentSuccess(false)
-      toast.success("Cliente creado en Etherfuse", {
-        description: "Tu wallet quedó registrada en Monad. Completa el formulario KYC.",
+      toast.success("Cliente listo en Etherfuse", {
+        description:
+          "Misma wallet = mismo cliente en sandbox (puedes cerrar la pestaña y volver). Si ya tenías KYC, debería aparecer el estado al actualizar.",
       })
     } catch (e) {
       setError(e instanceof Error ? e.message : "Error al registrar en Etherfuse")
     } finally {
       setLoadingOrg(false)
     }
+  }
+
+  const handleUseManualCustomerId = async () => {
+    const id = manualCustomerId.trim()
+    if (!wallet?.startsWith("0x")) {
+      setError("Conecta tu wallet primero.")
+      return
+    }
+    if (!UUID_RE.test(id)) {
+      setError("Pega un customerId UUID válido (panel Etherfuse u otra sesión).")
+      return
+    }
+    setError(null)
+    setEtherfuseCustomerId(id)
+    persistEtherfuseCustomerWallet(id, wallet)
+    setManualCustomerId("")
+    try {
+      const data = await apiGetKycStatus(id, wallet)
+      if (data.status) setKycStatus(data.status)
+    } catch {
+      /* el usuario puede pulsar Actualizar cuando la API esté lista */
+    }
+    toast.success("CustomerId guardado", { description: "Estado KYC actualizado si la API respondió." })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -329,9 +349,10 @@ export function ScreenKyc() {
       </div>
 
       {!etherfuseCustomerId && (
-        <div className="mb-6">
-          <p className="text-sm mb-3" style={{ color: "#4b3f72" }}>
-            Crea la organización cliente en Etherfuse y registra tu wallet en <strong>Monad</strong>.
+        <div className="mb-6 space-y-4">
+          <p className="text-sm" style={{ color: "#4b3f72" }}>
+            Un solo paso: registramos un <strong>cliente estable por wallet</strong> (sandbox). Si ya hiciste KYC antes
+            con esta app, al pulsar el botón se reutiliza el mismo <code className="text-[11px]">customerId</code>.
           </p>
           <Button
             type="button"
@@ -340,8 +361,33 @@ export function ScreenKyc() {
             onClick={() => void handleCreateOrg()}
             disabled={loadingOrg || !wallet}
           >
-            {loadingOrg ? <Loader2 className="w-4 h-4 animate-spin" /> : "Crear cliente en Etherfuse"}
+            {loadingOrg ? <Loader2 className="w-4 h-4 animate-spin" /> : "Registrar / recuperar cliente (esta wallet)"}
           </Button>
+          <div
+            className="rounded-xl p-3 space-y-2"
+            style={{ background: "#faf8ff", border: "1px solid #e8e0ff" }}
+          >
+            <p className="text-xs font-medium" style={{ color: "#5b4fc9" }}>
+              ¿Ya tienes otro <code className="text-[10px]">customerId</code> en Etherfuse?
+            </p>
+            <div className="flex gap-2">
+              <Input
+                placeholder="UUID del panel Etherfuse"
+                value={manualCustomerId}
+                onChange={e => setManualCustomerId(e.target.value)}
+                className="font-mono text-xs flex-1"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => void handleUseManualCustomerId()}
+                disabled={!wallet}
+              >
+                Usar
+              </Button>
+            </div>
+          </div>
         </div>
       )}
 

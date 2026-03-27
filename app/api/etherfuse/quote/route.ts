@@ -1,5 +1,21 @@
 import { NextResponse } from "next/server"
+import {
+  normalizeEvmRampTargetAsset,
+  shouldNormalizeQuoteTargetForBlockchain,
+} from "@/lib/etherfuse-evm-target"
 import { etherfuseFetch } from "@/lib/etherfuse-server"
+
+function normalizeQuoteBody(body: unknown): unknown {
+  if (!body || typeof body !== "object") return body
+  const b = body as Record<string, unknown>
+  if (!shouldNormalizeQuoteTargetForBlockchain(b.blockchain)) return body
+  const qa = b.quoteAssets
+  if (!qa || typeof qa !== "object") return body
+  const q = qa as Record<string, unknown>
+  if (typeof q.targetAsset !== "string") return body
+  q.targetAsset = normalizeEvmRampTargetAsset(q.targetAsset)
+  return body
+}
 
 export async function POST(req: Request) {
   let body: unknown
@@ -8,6 +24,8 @@ export async function POST(req: Request) {
   } catch {
     return NextResponse.json({ error: "JSON inválido" }, { status: 400 })
   }
+
+  body = normalizeQuoteBody(body)
 
   const res = await etherfuseFetch("/ramp/quote", {
     method: "POST",

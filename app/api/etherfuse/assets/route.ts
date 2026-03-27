@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { enrichMonadRampAssetsPayload } from "@/lib/etherfuse-monad-ramp-assets"
 import { etherfuseFetch } from "@/lib/etherfuse-server"
 
 export async function GET(req: Request) {
@@ -26,5 +27,6 @@ export async function GET(req: Request) {
       { status: res.status }
     )
   }
+  data = await enrichMonadRampAssetsPayload(data, blockchain)
   return NextResponse.json(data)
 }

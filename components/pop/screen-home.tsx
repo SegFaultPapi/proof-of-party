@@ -5,11 +5,12 @@ import Link from "next/link"
 import { useApp } from "@/lib/store"
 import { monadTestnet } from "@/lib/monad-testnet"
 import { useRef, useState } from "react"
-import { useAccount, useConnect, useSwitchChain } from "wagmi"
-import { injected } from "wagmi/connectors"
+import { useConfig, useAccount, useConnect, useSwitchChain } from "wagmi"
+import { getDefaultEvmConnector } from "@/lib/wallet-connect"
 
 export function ScreenHome() {
   const { goTo } = useApp()
+  const config = useConfig()
   const { isConnected } = useAccount()
   const { connectAsync, isPending: isConnecting } = useConnect()
   const { switchChainAsync } = useSwitchChain()
@@ -22,7 +23,9 @@ export function ScreenHome() {
       if (!isConnected) {
         if (isConnecting) return
         try {
-          await connectAsync({ connector: injected(), chainId: monadTestnet.id })
+          const evmConnector = getDefaultEvmConnector(config)
+          if (!evmConnector) return
+          await connectAsync({ connector: evmConnector, chainId: monadTestnet.id })
           try {
             await switchChainAsync({ chainId: monadTestnet.id })
           } catch {

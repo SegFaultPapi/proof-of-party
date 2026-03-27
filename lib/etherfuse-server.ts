@@ -6,11 +6,19 @@
 export const ETHERFUSE_SANDBOX_URL = "https://api.sand.etherfuse.com"
 
 export function getEtherfuseBaseUrl(): string {
-  return process.env.ETHERFUSE_API_BASE_URL?.trim() || ETHERFUSE_SANDBOX_URL
+  const raw = process.env.ETHERFUSE_API_BASE_URL?.trim() || ETHERFUSE_SANDBOX_URL
+  return raw.replace(/\/+$/, "")
 }
 
+/** Clave tal como la espera Etherfuse: sin «Bearer », sin comillas ni saltos de línea. */
 export function getEtherfuseApiKey(): string | undefined {
-  const k = process.env.ETHERFUSE_API_KEY?.trim()
+  let k = process.env.ETHERFUSE_API_KEY?.trim()
+  if (!k) return undefined
+  k = k.replace(/^Bearer\s+/i, "").trim()
+  if ((k.startsWith('"') && k.endsWith('"')) || (k.startsWith("'") && k.endsWith("'"))) {
+    k = k.slice(1, -1).trim()
+  }
+  k = k.replace(/\r?\n/g, "").trim()
   return k || undefined
 }
 
