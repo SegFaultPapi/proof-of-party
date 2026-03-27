@@ -1,5 +1,41 @@
 /** Cliente: onramp Etherfuse vía `/api/etherfuse/*` (sandbox). */
 
+const BANK_CACHE_PREFIX = "pop_ef_bank_"
+
+export function bankAccountCacheKey(customerId: string): string {
+  return `${BANK_CACHE_PREFIX}${customerId}`
+}
+
+/** Extrae el primer id de cuenta en la respuesta paginada de Etherfuse. */
+export function pickBankAccountIdFromResponse(data: unknown): string | undefined {
+  const d = data as { items?: unknown[] }
+  if (!Array.isArray(d.items)) return undefined
+  for (const item of d.items) {
+    if (item && typeof item === "object") {
+      const o = item as Record<string, unknown>
+      const id = o.id ?? o.bankAccountId
+      if (typeof id === "string" && id.length >= 32) return id
+    }
+  }
+  return undefined
+}
+
+export async function fetchCustomerBankAccounts(customerId: string): Promise<unknown> {
+  const res = await fetch(`/api/etherfuse/customer/${customerId}/bank-accounts`)
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    throw new Error(typeof (data as { error?: string }).error === "string" ? (data as { error: string }).error : "Error al listar cuentas")
+  }
+  return data
+}
+
+/** Mock opcional (solo sandbox): NEXT_PUBLIC_ETHERFUSE_MOCK_BANK_ACCOUNT_ID */
+export function getMockBankAccountIdFromEnv(): string | undefined {
+  if (typeof process === "undefined") return undefined
+  const v = process.env.NEXT_PUBLIC_ETHERFUSE_MOCK_BANK_ACCOUNT_ID?.trim()
+  return v || undefined
+}
+
 export interface RampableAsset {
   symbol: string
   identifier: string

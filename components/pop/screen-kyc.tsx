@@ -1,7 +1,9 @@
 "use client"
 
+import Link from "next/link"
 import { useCallback, useEffect, useState } from "react"
-import { Shield, ChevronLeft, Loader2, RefreshCw } from "lucide-react"
+import { Shield, ChevronLeft, Loader2, RefreshCw, CheckCircle2, X, Copy } from "lucide-react"
+import { toast } from "sonner"
 import { useApp } from "@/lib/store"
 import {
   apiCreateOrganization,
@@ -39,6 +41,9 @@ export function ScreenKyc() {
   const [loadingSubmit, setLoadingSubmit] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [pollTick, setPollTick] = useState(0)
+  /** Confirmaciones en pantalla tras acciones exitosas */
+  const [showOrgSuccess, setShowOrgSuccess] = useState(false)
+  const [showKycSentSuccess, setShowKycSentSuccess] = useState(false)
 
   const [email, setEmail] = useState("")
   const [phoneNumber, setPhoneNumber] = useState("")
@@ -103,6 +108,11 @@ export function ScreenKyc() {
         /* ignore */
       }
       await refreshStatus()
+      setShowOrgSuccess(true)
+      setShowKycSentSuccess(false)
+      toast.success("Cliente creado en Etherfuse", {
+        description: "Tu wallet quedó registrada en Monad. Completa el formulario KYC.",
+      })
     } catch (e) {
       setError(e instanceof Error ? e.message : "Error al registrar en Etherfuse")
     } finally {
@@ -143,6 +153,10 @@ export function ScreenKyc() {
         },
       })
       await refreshStatus()
+      setShowKycSentSuccess(true)
+      toast.success("KYC enviado a Etherfuse", {
+        description: "Etherfuse revisará los datos. Puedes actualizar el estado arriba.",
+      })
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al enviar datos")
     } finally {
@@ -187,12 +201,105 @@ export function ScreenKyc() {
         servidor. En sandbox puedes usar datos de prueba.
       </p>
 
+      {etherfuseCustomerId && (
+        <div
+          className="rounded-xl p-3 mb-4 flex flex-col gap-2"
+          style={{ background: "#f4f0ff", border: "1px solid #ddd6fe" }}
+        >
+          <p className="text-xs font-medium" style={{ color: "#5b4fc9" }}>
+            Tu <strong>customerId</strong> (UUID) — se usa solo en onramp y APIs:
+          </p>
+          <div className="flex items-center gap-2">
+            <code className="text-[11px] font-mono break-all flex-1" style={{ color: "#1a0f3c" }}>
+              {etherfuseCustomerId}
+            </code>
+            <button
+              type="button"
+              className="shrink-0 p-2 rounded-lg transition-colors"
+              style={{ background: "#ede9fe" }}
+              aria-label="Copiar customerId"
+              onClick={() => {
+                void navigator.clipboard.writeText(etherfuseCustomerId)
+                toast.success("customerId copiado")
+              }}
+            >
+              <Copy className="w-4 h-4" style={{ color: "#5b4fc9" }} />
+            </button>
+          </div>
+        </div>
+      )}
+
       {error && (
         <div
           className="rounded-xl px-4 py-3 text-sm mb-4"
           style={{ background: "#fef2f2", color: "#b91c1c", border: "1px solid #fecaca" }}
         >
           {error}
+        </div>
+      )}
+
+      {showOrgSuccess && (
+        <div
+          className="rounded-2xl p-4 mb-4 relative"
+          style={{
+            background: "linear-gradient(135deg, rgba(34,197,94,0.08), rgba(131,110,249,0.06))",
+            border: "1px solid rgba(34,197,94,0.35)",
+          }}
+          role="status"
+        >
+          <button
+            type="button"
+            className="absolute top-3 right-3 p-1 rounded-lg hover:bg-white/50"
+            aria-label="Cerrar"
+            onClick={() => setShowOrgSuccess(false)}
+          >
+            <X className="w-4 h-4" style={{ color: "#166534" }} />
+          </button>
+          <div className="flex gap-3 pr-8">
+            <CheckCircle2 className="w-8 h-8 shrink-0" style={{ color: "#16a34a" }} />
+            <div>
+              <p className="font-bold text-sm" style={{ color: "#14532d" }}>
+                Confirmación: cliente registrado
+              </p>
+              <p className="text-sm mt-1 leading-relaxed" style={{ color: "#166534" }}>
+                Etherfuse creó la organización y vinculó tu dirección en Monad. El siguiente paso es enviar el
+                formulario de identidad.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showKycSentSuccess && !approved && (
+        <div
+          className="rounded-2xl p-4 mb-4 relative"
+          style={{
+            background: "#f0fdf4",
+            border: "1px solid #86efac",
+          }}
+          role="status"
+        >
+          <button
+            type="button"
+            className="absolute top-3 right-3 p-1 rounded-lg hover:bg-white/60"
+            aria-label="Cerrar"
+            onClick={() => setShowKycSentSuccess(false)}
+          >
+            <X className="w-4 h-4" style={{ color: "#166534" }} />
+          </button>
+          <div className="flex gap-3 pr-8">
+            <CheckCircle2 className="w-8 h-8 shrink-0" style={{ color: "#22c55e" }} />
+            <div>
+              <p className="font-bold text-sm" style={{ color: "#14532d" }}>
+                Confirmación: datos KYC recibidos
+              </p>
+              <p className="text-sm mt-1 leading-relaxed" style={{ color: "#166534" }}>
+                Tu información se envió correctamente a la sandbox de Etherfuse. El estado puede pasar a{" "}
+                <strong>En revisión</strong> y luego a <strong>Aprobado</strong> (en sandbox a veces es
+                automático tras acuerdos). Usa «Actualizar» para ver cambios.
+              </p>
+            </div>
+          </div>
         </div>
       )}
 
@@ -324,9 +431,30 @@ export function ScreenKyc() {
       </form>
 
       {approved && (
-        <p className="mt-6 text-sm text-center" style={{ color: "#15803d" }}>
-          Tu verificación está aprobada en sandbox. Puedes continuar con el flujo de la app.
-        </p>
+        <div
+          className="mt-6 rounded-2xl p-5 text-center space-y-3"
+          style={{
+            background: "linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%)",
+            border: "1px solid #6ee7b7",
+          }}
+          role="status"
+        >
+          <CheckCircle2 className="w-12 h-12 mx-auto" style={{ color: "#059669" }} />
+          <p className="font-bold text-base" style={{ color: "#065f46" }}>
+            KYC aprobado
+          </p>
+          <p className="text-sm leading-relaxed" style={{ color: "#047857" }}>
+            Etherfuse marcó tu verificación como aprobada. Ya puedes usar onramps y el resto del flujo según tu
+            cuenta bancaria en sandbox.
+          </p>
+          <Link
+            href="/onramp"
+            className="inline-flex items-center justify-center font-semibold rounded-xl px-5 py-3 text-sm text-white transition-opacity hover:opacity-90"
+            style={{ background: "linear-gradient(135deg, #16a34a, #059669)" }}
+          >
+            Ir a probar onramp →
+          </Link>
+        </div>
       )}
     </main>
   )

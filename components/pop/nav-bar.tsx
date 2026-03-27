@@ -1,6 +1,7 @@
 "use client"
 
-import { Zap, Shield } from "lucide-react"
+import Link from "next/link"
+import { Zap, Shield, Banknote } from "lucide-react"
 import { useAccount } from "wagmi"
 import { useApp } from "@/lib/store"
 import { WalletButton } from "./wallet-button"
@@ -35,18 +36,29 @@ export function NavBar() {
             Proof<span style={{ color: "#836ef9" }}>of</span>Party
           </span>
         </button>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           {isConnected && (
-            <button
-              type="button"
-              onClick={() => goTo("kyc")}
-              className="flex items-center justify-center w-9 h-9 rounded-xl transition-colors"
-              style={{ background: "#ede9fe", color: "#5b4fc9" }}
-              aria-label="KYC Etherfuse"
-              title="KYC Etherfuse"
-            >
-              <Shield className="w-4 h-4" />
-            </button>
+            <>
+              <Link
+                href="/onramp"
+                className="flex items-center justify-center w-9 h-9 rounded-xl transition-colors hover:opacity-90"
+                style={{ background: "#dcfce7", color: "#15803d" }}
+                aria-label="Onramp Etherfuse"
+                title="Onramp (fondos al seguro)"
+              >
+                <Banknote className="w-4 h-4" />
+              </Link>
+              <button
+                type="button"
+                onClick={() => goTo("kyc")}
+                className="flex items-center justify-center w-9 h-9 rounded-xl transition-colors"
+                style={{ background: "#ede9fe", color: "#5b4fc9" }}
+                aria-label="KYC Etherfuse"
+                title="KYC Etherfuse"
+              >
+                <Shield className="w-4 h-4" />
+              </button>
+            </>
           )}
           <WalletButton compact />
         </div>

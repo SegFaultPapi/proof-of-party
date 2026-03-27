@@ -12,6 +12,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
   fetchRampAssets,
+  fetchCustomerBankAccounts,
+  pickBankAccountIdFromResponse,
+  bankAccountCacheKey,
+  getMockBankAccountIdFromEnv,
   createQuote,
   createOrder,
   getOrder,
@@ -20,12 +24,17 @@ import {
 } from "@/lib/etherfuse-onramp-api"
 import { cn } from "@/lib/utils"
 
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
 export function OnrampTest() {
   const { address, isConnected } = useAccount()
   const { etherfuseCustomerId } = useApp()
 
   const [customerId, setCustomerId] = useState("")
   const [bankAccountId, setBankAccountId] = useState("")
+  const [loadingIds, setLoadingIds] = useState(false)
+  const [idsNonce, setIdsNonce] = useState(0)
   const [sourceAmount, setSourceAmount] = useState("100")
   const [assets, setAssets] = useState<RampableAsset[]>([])
   const [targetId, setTargetId] = useState("")
@@ -40,11 +49,93 @@ export function OnrampTest() {
   const [loadingSim, setLoadingSim] = useState(false)
   const [polling, setPolling] = useState(false)
 
+  /** customerId: store KYC → sessionStorage → editable */
   useEffect(() => {
-    if (etherfuseCustomerId && !customerId) {
-      setCustomerId(etherfuseCustomerId)
+    setCustomerId(prev => {
+      if (prev.trim()) return prev
+      if (etherfuseCustomerId) return etherfuseCustomerId
+      try {
+        return sessionStorage.getItem("pop_ef_customer_id") || ""
+      } catch {
+        return ""
+      }
+    })
+  }, [etherfuseCustomerId])
+
+  /** bankAccountId: caché por cliente → GET /ramp/customer/{id}/bank-accounts (docs Etherfuse) → mock .env */
+  useEffect(() => {
+    const trimmed = customerId.trim()
+    if (!trimmed) {
+      setBankAccountId("")
+      return
     }
-  }, [etherfuseCustomerId, customerId])
+    if (!UUID_RE.test(trimmed)) return
+
+    let cancelled = false
+    setLoadingIds(true)
+    ;(async () => {
+      try {
+        const cacheKey = bankAccountCacheKey(trimmed)
+        let bid: string | undefined
+        try {
+          const cached = sessionStorage.getItem(cacheKey)?.trim()
+          if (cached) bid = cached
+        } catch {
+          /* ignore */
+        }
+        if (!bid) {
+          const data = await fetchCustomerBankAccounts(trimmed)
+          bid = pickBankAccountIdFromResponse(data)
+          if (bid) {
+            try {
+              sessionStorage.setItem(cacheKey, bid)
+            } catch {
+              /* ignore */
+            }
+          }
+        }
+        if (cancelled) return
+        if (bid) {
+          setBankAccountId(bid)
+          toast.success("bankAccountId cargado automáticamente")
+        } else {
+          const mock = getMockBankAccountIdFromEnv()
+          if (mock) {
+            setBankAccountId(mock)
+            toast.message("Sin cuentas en API: usando NEXT_PUBLIC_ETHERFUSE_MOCK_BANK_ACCOUNT_ID")
+          } else {
+            toast.message("No hay cuentas para este cliente. Registra CLABE en Etherfuse o define MOCK en .env")
+          }
+        }
+      } catch (e) {
+        if (cancelled) return
+        const mock = getMockBankAccountIdFromEnv()
+        if (mock) {
+          setBankAccountId(mock)
+          toast.message("Listado de cuentas falló; usando mock del .env")
+        } else {
+          toast.error(e instanceof Error ? e.message : "No se pudieron cargar las cuentas")
+        }
+      } finally {
+        if (!cancelled) setLoadingIds(false)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [customerId, idsNonce])
+
+  const reloadIds = () => {
+    const trimmed = customerId.trim()
+    if (trimmed && UUID_RE.test(trimmed)) {
+      try {
+        sessionStorage.removeItem(bankAccountCacheKey(trimmed))
+      } catch {
+        /* ignore */
+      }
+    }
+    setIdsNonce(n => n + 1)
+  }
 
   const loadAssets = useCallback(async () => {
     if (!address) {
@@ -226,24 +317,45 @@ export function OnrampTest() {
         )}
 
         <section className="rounded-2xl p-4 space-y-4" style={{ background: "#fff", border: "1px solid #e8e0ff" }}>
-          <h2 className="text-sm font-bold" style={{ color: "#1a0f3c" }}>
-            Identificadores
-          </h2>
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <h2 className="text-sm font-bold" style={{ color: "#1a0f3c" }}>
+              Identificadores
+            </h2>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="gap-1 shrink-0"
+              disabled={loadingIds || !UUID_RE.test(customerId.trim())}
+              onClick={() => reloadIds()}
+            >
+              {loadingIds ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+              Refrescar UUIDs
+            </Button>
+          </div>
+          <p className="text-xs leading-relaxed" style={{ color: "#7c6bb5" }}>
+            El <strong>customerId</strong> se toma del KYC (sesión). El <strong>bankAccountId</strong> se obtiene de la API
+            Etherfuse (<code className="text-[10px]">GET …/bank-accounts</code>) o del mock{" "}
+            <code className="text-[10px]">NEXT_PUBLIC_ETHERFUSE_MOCK_BANK_ACCOUNT_ID</code> si no hay cuentas.
+          </p>
           <div className="grid gap-2">
             <Label htmlFor="cust">customerId (org / hijo Etherfuse)</Label>
             <Input
               id="cust"
-              placeholder="UUID del cliente"
+              placeholder="UUID — se rellena solo tras crear cliente en KYC"
               value={customerId}
               onChange={e => setCustomerId(e.target.value)}
               className="font-mono text-xs"
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="bank">bankAccountId (CLABE registrada)</Label>
+            <Label htmlFor="bank" className="flex items-center gap-2">
+              bankAccountId (CLABE registrada)
+              {loadingIds && <Loader2 className="w-3.5 h-3.5 animate-spin" style={{ color: "#836ef9" }} />}
+            </Label>
             <Input
               id="bank"
-              placeholder="UUID de la cuenta bancaria"
+              placeholder="UUID — carga automática desde Etherfuse"
               value={bankAccountId}
               onChange={e => setBankAccountId(e.target.value)}
               className="font-mono text-xs"
