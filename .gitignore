@@ -3,6 +3,9 @@
 # dependencies
 /node_modules
 
+# Monad MCP tutorial (clon local; ver ~/.cursor/mcp.json → monad-mcp)
+monad-mcp-tutorial/
+
 # next.js
 /.next/
 /out/
